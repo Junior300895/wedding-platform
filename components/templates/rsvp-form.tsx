@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { createGuestAction } from "@/actions/guest.actions";
+import { RSVP_FIELDS, type RsvpField } from "@/lib/validations/rsvp-fields";
 import type { Theme } from "./types";
 
 export function RsvpForm({
@@ -14,9 +15,43 @@ export function RsvpForm({
   theme: Theme;
 }) {
   const [state, formAction, pending] = useActionState(createGuestAction, {});
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const fieldClass = `h-12 w-full rounded-xl border px-3.5 text-sm outline-none transition-colors focus:border-current ${theme.field}`;
+  const errors = state?.fieldErrors ?? {};
+
+  // Apres un envoi refuse, on emmene l'invite sur le premier champ fautif
+  // plutot que de lui laisser chercher.
+  useEffect(() => {
+    const first = RSVP_FIELDS.find((f) => errors[f]);
+    if (!first) return;
+    const el = formRef.current?.querySelector<HTMLElement>(`#rsvp-${first}`);
+    el?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
+
+  // Le filet du theme est remplace, jamais superpose : aucun conflit de
+  // classes a arbitrer, donc pas de tailwind-merge dans le bundle invite.
+  const fieldClass = (field: RsvpField) =>
+    `h-12 w-full rounded-xl border px-3.5 text-sm outline-none transition-colors focus:border-current ${
+      theme.field
+    } ${errors[field] ? "border-red-600" : theme.fieldBorder}`;
+
   const labelClass = `mb-1.5 block text-[0.7rem] uppercase tracking-[0.15em] ${theme.accentSoft}`;
+
+  function FieldError({ field }: { field: RsvpField }) {
+    if (!errors[field]) return null;
+    return (
+      <p id={`rsvp-${field}-error`} className={`mt-1.5 text-sm ${theme.fieldError}`}>
+        {errors[field]}
+      </p>
+    );
+  }
+
+  /** Attributs qui relient un champ a son message d'erreur. */
+  const a11y = (field: RsvpField) =>
+    errors[field]
+      ? { "aria-invalid": true as const, "aria-describedby": `rsvp-${field}-error` }
+      : {};
 
   if (state?.success) {
     return (
@@ -30,7 +65,7 @@ export function RsvpForm({
   }
 
   return (
-    <form action={formAction} className="space-y-5 text-left">
+    <form ref={formRef} action={formAction} noValidate className="space-y-5 text-left">
       <input type="hidden" name="weddingId" value={weddingId} />
 
       <div>
@@ -43,8 +78,10 @@ export function RsvpForm({
           required
           autoComplete="name"
           placeholder="Moussa Diop"
-          className={fieldClass}
+          className={fieldClass("name")}
+          {...a11y("name")}
         />
+        <FieldError field="name" />
       </div>
 
       <div>
@@ -58,8 +95,10 @@ export function RsvpForm({
           inputMode="tel"
           autoComplete="tel"
           placeholder="77 000 00 00"
-          className={fieldClass}
+          className={fieldClass("phone")}
+          {...a11y("phone")}
         />
+        <FieldError field="phone" />
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto]">
@@ -71,27 +110,31 @@ export function RsvpForm({
             id="rsvp-response"
             name="response"
             required
-            className={fieldClass}
+            className={fieldClass("response")}
+            {...a11y("response")}
           >
             <option value="YES">Je serai present(e)</option>
             <option value="NO">Je ne pourrai pas</option>
             <option value="MAYBE">Peut-etre</option>
           </select>
+          <FieldError field="response" />
         </div>
         <div className="sm:w-32">
-          <label htmlFor="rsvp-party" className={labelClass}>
+          <label htmlFor="rsvp-partySize" className={labelClass}>
             Personnes
           </label>
           <input
-            id="rsvp-party"
+            id="rsvp-partySize"
             name="partySize"
             type="number"
             inputMode="numeric"
             min={1}
             max={20}
             defaultValue={1}
-            className={fieldClass}
+            className={fieldClass("partySize")}
+            {...a11y("partySize")}
           />
+          <FieldError field="partySize" />
         </div>
       </div>
 
@@ -104,14 +147,19 @@ export function RsvpForm({
           name="message"
           rows={3}
           placeholder="Facultatif"
-          className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-colors focus:border-current ${theme.field}`}
+          className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-colors focus:border-current ${
+            theme.field
+          } ${errors.message ? "border-red-600" : theme.fieldBorder}`}
+          {...a11y("message")}
         />
+        <FieldError field="message" />
       </div>
 
+      {/* Erreur globale : rien a rattacher a un champ (invitation retiree...) */}
       {state?.error && (
         <p
           role="alert"
-          className="rounded-xl border border-red-500/40 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-500"
+          className={`rounded-xl border border-red-600/40 bg-red-600/10 px-3.5 py-2.5 text-sm ${theme.fieldError}`}
         >
           {state.error}
         </p>

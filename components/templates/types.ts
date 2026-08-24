@@ -49,8 +49,16 @@ export type Theme = {
   accentSoft: string;
   /** Pastille pleine du rail horaire. */
   accentDot: string;
-  /** Champs de formulaire : fond, filet, texte et jeu de couleurs natif. */
+  /** Champs de formulaire : fond, texte, et jeu de couleurs natif. */
   field: string;
+  /**
+   * Filet des champs, separe de `field` : un champ en erreur remplace cette
+   * classe au lieu d'entrer en conflit avec elle. Evite d'avoir a embarquer
+   * tailwind-merge dans le bundle des invites.
+   */
+  fieldBorder: string;
+  /** Texte et filet d'erreur, accordes au fond du theme. */
+  fieldError: string;
   heroFont: string; // font-serif | font-sans
   heroBgClass: string; // degrade / couleur du hero
   /** Voile pose sur la photo de couverture pour garder le titre lisible. */

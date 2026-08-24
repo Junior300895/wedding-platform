@@ -156,7 +156,10 @@ export function WeddingTemplate({
         <Section>
           <div className="mx-auto max-w-4xl">
             <SectionHead eyebrow="Un aperçu de" title="Notre histoire" theme={theme} />
-            <Gallery photos={galleryPhotos} />
+            <Gallery
+              photos={galleryPhotos}
+              coupleName={`${wedding.partnerOne} & ${wedding.partnerTwo}`}
+            />
           </div>
         </Section>
       )}
@@ -181,7 +184,7 @@ export function WeddingTemplate({
 
       {/* PARTAGE */}
       <Section className="pt-0 sm:pt-0">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-md">
           <SectionHead
             eyebrow="Faites passer"
             title="Partager l'invitation"

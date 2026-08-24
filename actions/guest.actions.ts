@@ -4,8 +4,15 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { rsvpSchema } from "@/lib/validations/rsvp";
+import { RSVP_FIELDS, type RsvpFieldErrors } from "@/lib/validations/rsvp-fields";
 
-type ActionState = { error?: string; success?: boolean };
+type ActionState = {
+  /** Erreur globale : rien a rattacher a un champ precis. */
+  error?: string;
+  /** Erreurs rattachees a un champ, pour un message au bon endroit. */
+  fieldErrors?: RsvpFieldErrors;
+  success?: boolean;
+};
 
 /**
  * RSVP public : cree un invite sans authentification.
@@ -25,7 +32,18 @@ export async function createGuestAction(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0]?.message ?? "Donnees invalides" };
+    const flat = parsed.error.flatten().fieldErrors;
+    const fieldErrors: RsvpFieldErrors = {};
+    for (const field of RSVP_FIELDS) {
+      const message = flat[field]?.[0];
+      if (message) fieldErrors[field] = message;
+    }
+    // Un probleme hors formulaire (weddingId absent) n'a aucun champ ou
+    // s'afficher : on le remonte en message global.
+    if (Object.keys(fieldErrors).length === 0) {
+      return { error: "Donnees invalides. Rechargez la page et reessayez." };
+    }
+    return { fieldErrors };
   }
 
   const data = parsed.data;
@@ -36,7 +54,7 @@ export async function createGuestAction(
     select: { id: true, status: true, slug: true },
   });
   if (!wedding || wedding.status !== "PUBLISHED") {
-    return { error: "Invitation indisponible" };
+    return { error: "Cette invitation n'est plus disponible." };
   }
 
   await db.guest.create({

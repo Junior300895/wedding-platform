@@ -93,8 +93,6 @@ export default async function WeddingManagePage({
           weddingId={wedding.id}
           status={wedding.status}
           publicUrl={publicUrl}
-          partnerOne={wedding.partnerOne}
-          partnerTwo={wedding.partnerTwo}
         />
       </Section>
 

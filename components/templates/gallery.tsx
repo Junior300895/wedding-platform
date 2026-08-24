@@ -3,8 +3,16 @@
 import { useEffect, useState } from "react";
 import type { PublicPhoto } from "./types";
 
-export function Gallery({ photos }: { photos: PublicPhoto[] }) {
-  const [active, setActive] = useState<string | null>(null);
+export function Gallery({
+  photos,
+  coupleName,
+}: {
+  photos: PublicPhoto[];
+  coupleName: string;
+}) {
+  const [active, setActive] = useState<{ url: string; index: number } | null>(
+    null
+  );
 
   // Echap ferme la visionneuse, et le fond ne defile plus derriere elle.
   useEffect(() => {
@@ -30,14 +38,14 @@ export function Gallery({ photos }: { photos: PublicPhoto[] }) {
           <button
             key={p.id}
             type="button"
-            onClick={() => setActive(p.url)}
-            aria-label={`Agrandir la photo ${i + 1}`}
+            onClick={() => setActive({ url: p.url, index: i })}
+            aria-label={`Agrandir la photo ${i + 1} sur ${photos.length}`}
             className="group relative aspect-square overflow-hidden rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={p.url}
-              alt=""
+              alt={`${coupleName} — photo ${i + 1}`}
               loading="lazy"
               decoding="async"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -56,8 +64,8 @@ export function Gallery({ photos }: { photos: PublicPhoto[] }) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={active}
-            alt=""
+            src={active.url}
+            alt={`${coupleName} — photo ${active.index + 1}`}
             className="max-h-[90vh] max-w-full rounded-xl object-contain"
           />
           <button
