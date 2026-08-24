@@ -155,7 +155,7 @@ export function WeddingTemplate({
       {galleryPhotos.length > 0 && (
         <Section>
           <div className="mx-auto max-w-4xl">
-            <SectionHead eyebrow="Souvenirs" title="Notre galerie" theme={theme} />
+            <SectionHead eyebrow="Un aperçu de" title="Notre histoire" theme={theme} />
             <Gallery photos={galleryPhotos} />
           </div>
         </Section>

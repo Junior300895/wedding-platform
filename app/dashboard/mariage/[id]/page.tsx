@@ -10,6 +10,7 @@ import { EventManager } from "@/components/dashboard/event-manager";
 import { PhotoManager } from "@/components/dashboard/photo-manager";
 import { GuestList } from "@/components/dashboard/guest-list";
 import { PublishPanel } from "@/components/dashboard/publish-panel";
+import { AdminContextBar } from "@/components/admin/admin-context-bar";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Gestion du mariage" };
@@ -40,6 +41,7 @@ export default async function WeddingManagePage({
   const wedding = await db.wedding.findUnique({
     where: { id },
     include: {
+      user: { select: { name: true, email: true } },
       events: { orderBy: { sortOrder: "asc" } },
       photos: { orderBy: { sortOrder: "asc" } },
       guests: { orderBy: { createdAt: "desc" } },
@@ -48,6 +50,9 @@ export default async function WeddingManagePage({
 
   if (!wedding) notFound();
   if (wedding.userId !== user.id && user.role !== "ADMIN") notFound();
+
+  // Un admin sur le mariage d'un client : on le signale explicitement.
+  const asAdmin = wedding.userId !== user.id && user.role === "ADMIN";
 
   const templates = await db.weddingTemplate.findMany({
     where: { isActive: true },
@@ -59,9 +64,21 @@ export default async function WeddingManagePage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {asAdmin && (
+        <AdminContextBar
+          weddingId={wedding.id}
+          ownerName={wedding.user.name}
+          ownerEmail={wedding.user.email}
+          planTier={wedding.planTier}
+        />
+      )}
+
       <div>
-        <Link href="/dashboard" className="text-sm text-neutral-500 hover:text-neutral-800">
-          ← Mes mariages
+        <Link
+          href={asAdmin ? "/admin/weddings" : "/dashboard"}
+          className="text-sm text-neutral-500 hover:text-neutral-800"
+        >
+          ← {asAdmin ? "Administration" : "Mes mariages"}
         </Link>
         <div className="mt-2 flex items-center gap-3">
           <h1 className="font-serif text-2xl font-bold text-neutral-900">

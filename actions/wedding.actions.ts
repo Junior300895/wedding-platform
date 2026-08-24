@@ -6,6 +6,8 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { weddingSchema } from "@/lib/validations/wedding";
 import { buildWeddingSlug } from "@/lib/utils";
+import { deleteWeddingCascade } from "@/lib/wedding-delete";
+import { ensureUniqueWeddingSlug } from "@/lib/slug";
 
 type ActionState = { error?: string; success?: boolean; id?: string };
 
@@ -21,16 +23,6 @@ async function assertOwnership(weddingId: string) {
     throw new Error("Acces refuse");
   }
   return { user, wedding };
-}
-
-async function ensureUniqueSlug(base: string, ignoreId?: string): Promise<string> {
-  let slug = base;
-  let i = 1;
-  while (true) {
-    const found = await db.wedding.findUnique({ where: { slug } });
-    if (!found || found.id === ignoreId) return slug;
-    slug = `${base}-${i++}`;
-  }
 }
 
 export async function createWeddingAction(
@@ -60,7 +52,7 @@ export async function createWeddingAction(
   }
 
   const data = parsed.data;
-  const slug = await ensureUniqueSlug(data.slug);
+  const slug = await ensureUniqueWeddingSlug(data.slug);
 
   const wedding = await db.wedding.create({
     data: {
@@ -103,7 +95,7 @@ export async function updateWeddingAction(
   }
 
   const data = parsed.data;
-  const slug = await ensureUniqueSlug(data.slug, weddingId);
+  const slug = await ensureUniqueWeddingSlug(data.slug, weddingId);
 
   await db.wedding.update({
     where: { id: weddingId },
@@ -165,7 +157,8 @@ export async function unpublishWeddingAction(weddingId: string) {
 
 export async function deleteWeddingAction(weddingId: string) {
   await assertOwnership(weddingId);
-  await db.wedding.delete({ where: { id: weddingId } });
+  const { slug } = await deleteWeddingCascade(weddingId);
   revalidatePath("/dashboard");
+  revalidatePath(`/mariage/${slug}`);
   redirect("/dashboard");
 }
