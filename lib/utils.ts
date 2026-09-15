@@ -68,9 +68,39 @@ export function formatPrice(amount: number, currency = "XOF"): string {
   }).format(amount);
 }
 
-export const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const isLocalhost = (url: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url);
+
+/**
+ * Adresse publique de l'application, calculee a chaque appel (cote serveur).
+ *
+ * Ordre de priorite :
+ *   1. NEXT_PUBLIC_APP_URL, sauf si elle pointe vers localhost alors qu'on
+ *      tourne sur Vercel (cas typique : .env.local colle tel quel dans Vercel)
+ *   2. Sur Vercel en production : le domaine de production du projet
+ *   3. Sur Vercel en preview : l'URL du deploiement
+ *   4. En local : http://localhost:3000
+ *
+ * Les variables VERCEL_* sont fournies par Vercel a l'execution : pas besoin
+ * de redeployer pour qu'elles soient prises en compte, contrairement a une
+ * variable NEXT_PUBLIC_ inscrite dans le code au moment du build.
+ */
+export function appUrl(): string {
+  const onVercel = Boolean(process.env.VERCEL);
+  const explicit = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "");
+
+  if (explicit && !(onVercel && isLocalhost(explicit))) return explicit;
+
+  if (onVercel) {
+    const production = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    if (process.env.VERCEL_ENV === "production" && production) {
+      return `https://${production}`;
+    }
+    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return "http://localhost:3000";
+}
 
 export function absoluteUrl(path: string): string {
-  return `${APP_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  return `${appUrl()}${path.startsWith("/") ? path : `/${path}`}`;
 }
