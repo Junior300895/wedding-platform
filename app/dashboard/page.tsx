@@ -1,3 +1,4 @@
+import { weddingPath } from "@/lib/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth";
@@ -64,7 +65,7 @@ export default async function DashboardPage() {
                   {formatDateFr(w.weddingDate)} · {w._count.guests} RSVP · {w._count.photos} photos
                 </p>
               </div>
-              <span className="text-sm text-neutral-400">/mariage/{w.slug}</span>
+              <span className="text-sm text-neutral-400">{weddingPath(w.slug)}</span>
             </Link>
           ))}
         </div>

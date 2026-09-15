@@ -24,7 +24,7 @@ documentation d'architecture Next.js Full Stack.
 - **Mariage** : créer, modifier, publier, archiver, supprimer
 - **Templates** : 6 designs (Classic, Minimal, Luxury, Floral, Tradition, Oriental) — le design est séparé des données
 - **Photos** : upload, photo de couverture, suppression
-- **Page publique** : `/mariage/[slug]` avec hero, compte à rebours, programme, localisation, galerie, RSVP, partage
+- **Page publique** : `/event/[slug]` (l'ancien chemin `/mariage/[slug]` redirige) avec hero, compte à rebours, programme, localisation, galerie, RSVP, partage
 - **RSVP** : formulaire public sans compte (présence, nombre de personnes, message)
 - **Partage** : WhatsApp, copie de lien, QR code
 - **SEO** : metadata dynamiques + Open Graph pour l'aperçu WhatsApp/réseaux
@@ -75,7 +75,7 @@ Ouvrir http://localhost:3000
 | Admin  | admin@wedding.sn  | admin1234    |
 | Client | demo@wedding.sn   | demo1234     |
 
-Exemple d'invitation publiée : http://localhost:3000/mariage/alioune-fatou
+Exemple d'invitation publiée : http://localhost:3000/event/alioune-fatou
 
 ## Structure du projet
 
@@ -85,7 +85,7 @@ wedding-platform/
 │   ├── (marketing)/          # accueil, tarifs, contact
 │   ├── (auth)/               # login, register
 │   ├── dashboard/            # espace client (CRUD mariage, photos, RSVP)
-│   ├── mariage/[slug]/       # page publique (rendu par template)
+│   ├── event/[slug]/         # page publique (rendu par template)
 │   ├── admin/                # administration
 │   └── api/                  # route handlers
 ├── actions/                  # Server Actions (wedding, event, guest, photo, auth, share, admin)

@@ -1,3 +1,4 @@
+import { weddingPath } from "@/lib/routes";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import QRCode from "qrcode";
@@ -42,7 +43,7 @@ export async function generateMetadata({
     wedding.photos[0]?.url ??
     wedding.coverImageUrl ??
     undefined;
-  const url = absoluteUrl(`/mariage/${slug}`);
+  const url = absoluteUrl(weddingPath(slug));
 
   return {
     title,
@@ -73,7 +74,7 @@ export default async function PublicWeddingPage({
   const wedding = await getWedding(slug);
   if (!wedding) notFound();
 
-  const publicUrl = absoluteUrl(`/mariage/${slug}`);
+  const publicUrl = absoluteUrl(weddingPath(slug));
   const templateKey = wedding.template?.key ?? "classic";
 
   // QR code genere cote serveur (data URL PNG)

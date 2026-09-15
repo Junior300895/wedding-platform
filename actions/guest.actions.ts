@@ -1,5 +1,6 @@
 "use server";
 
+import { weddingPath } from "@/lib/routes";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
@@ -68,7 +69,7 @@ export async function createGuestAction(
     },
   });
 
-  revalidatePath(`/mariage/${wedding.slug}`);
+  revalidatePath(weddingPath(wedding.slug));
   return { success: true };
 }
 

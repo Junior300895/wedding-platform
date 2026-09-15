@@ -1,5 +1,6 @@
 "use server";
 
+import { weddingPath } from "@/lib/routes";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -112,7 +113,7 @@ export async function updateWeddingAction(
   });
 
   revalidatePath(`/dashboard/mariage/${weddingId}`);
-  revalidatePath(`/mariage/${slug}`);
+  revalidatePath(weddingPath(slug));
   return { success: true };
 }
 
@@ -134,7 +135,7 @@ export async function publishWeddingAction(weddingId: string) {
     select: { slug: true },
   });
   revalidatePath("/dashboard");
-  revalidatePath(`/mariage/${w.slug}`);
+  revalidatePath(weddingPath(w.slug));
 }
 
 export async function archiveWeddingAction(weddingId: string) {
@@ -159,6 +160,6 @@ export async function deleteWeddingAction(weddingId: string) {
   await assertOwnership(weddingId);
   const { slug } = await deleteWeddingCascade(weddingId);
   revalidatePath("/dashboard");
-  revalidatePath(`/mariage/${slug}`);
+  revalidatePath(weddingPath(slug));
   redirect("/dashboard");
 }

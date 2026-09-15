@@ -1,5 +1,6 @@
 "use client";
 
+import { PUBLIC_WEDDING_PREFIX } from "@/lib/routes";
 import { useActionState, useState } from "react";
 import { createWeddingAction } from "@/actions/wedding.actions";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export function WeddingCreateForm({ templates }: { templates: Template[] }) {
       <div>
         <Label htmlFor="slug">URL publique *</Label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-neutral-400">/mariage/</span>
+          <span className="text-sm text-neutral-400">{PUBLIC_WEDDING_PREFIX}/</span>
           <Input
             id="slug"
             name="slug"

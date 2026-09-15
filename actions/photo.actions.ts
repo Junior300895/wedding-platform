@@ -1,5 +1,6 @@
 "use server";
 
+import { weddingPath } from "@/lib/routes";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
@@ -67,7 +68,7 @@ export async function uploadPhotoAction(
   }
 
   revalidatePath(`/dashboard/mariage/${weddingId}`);
-  revalidatePath(`/mariage/${wedding.slug}`);
+  revalidatePath(weddingPath(wedding.slug));
   return { success: true };
 }
 
@@ -90,7 +91,7 @@ export async function deletePhotoAction(photoId: string) {
   });
 
   revalidatePath(`/dashboard/mariage/${photo.wedding.id}`);
-  revalidatePath(`/mariage/${photo.wedding.slug}`);
+  revalidatePath(weddingPath(photo.wedding.slug));
 }
 
 export async function setCoverPhotoAction(photoId: string) {
@@ -116,5 +117,5 @@ export async function setCoverPhotoAction(photoId: string) {
   ]);
 
   revalidatePath(`/dashboard/mariage/${photo.wedding.id}`);
-  revalidatePath(`/mariage/${photo.wedding.slug}`);
+  revalidatePath(weddingPath(photo.wedding.slug));
 }

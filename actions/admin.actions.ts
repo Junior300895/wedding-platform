@@ -1,5 +1,6 @@
 "use server";
 
+import { weddingPath } from "@/lib/routes";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
@@ -204,7 +205,7 @@ export async function deleteWeddingAdminAction(
   revalidatePath("/admin/weddings");
   revalidatePath("/admin");
   revalidatePath("/dashboard");
-  revalidatePath(`/mariage/${wedding.slug}`);
+  revalidatePath(weddingPath(wedding.slug));
 
   return { success: true };
 }

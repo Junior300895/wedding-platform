@@ -1,3 +1,4 @@
+import { weddingPath } from "@/lib/routes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -52,7 +53,7 @@ export default async function AdminWeddingsPage() {
                 <td className="px-4 py-3 text-neutral-600">{w._count.guests}</td>
                 <td className="px-4 py-3">
                   <Link
-                    href={`/mariage/${w.slug}`}
+                    href={weddingPath(w.slug)}
                     target="_blank"
                     className="text-brand-600 hover:underline"
                   >

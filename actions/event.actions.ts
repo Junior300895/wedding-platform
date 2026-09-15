@@ -1,5 +1,6 @@
 "use server";
 
+import { weddingPath } from "@/lib/routes";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
@@ -37,7 +38,7 @@ async function assertEventOwner(eventId: string) {
 
 function revalidateWedding(weddingId: string, slug: string) {
   revalidatePath(`/dashboard/mariage/${weddingId}`);
-  revalidatePath(`/mariage/${slug}`);
+  revalidatePath(weddingPath(slug));
 }
 
 /**

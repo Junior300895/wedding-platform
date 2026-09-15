@@ -1,5 +1,6 @@
 "use client";
 
+import { PUBLIC_WEDDING_PREFIX } from "@/lib/routes";
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { createWeddingForClientAction } from "@/actions/admin.actions";
@@ -278,7 +279,7 @@ export function AdminWeddingCreateForm({
         <div>
           <Label htmlFor="slug">Lien public *</Label>
           <div className="flex items-center gap-2">
-            <span className="shrink-0 text-sm text-neutral-400">/mariage/</span>
+            <span className="shrink-0 text-sm text-neutral-400">{PUBLIC_WEDDING_PREFIX}/</span>
             <Input
               id="slug"
               name="slug"

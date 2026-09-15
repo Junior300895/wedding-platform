@@ -1,3 +1,4 @@
+import { weddingPath } from "@/lib/routes";
 import Link from "next/link";
 
 const steps = [
@@ -8,7 +9,7 @@ const steps = [
 ];
 
 const features = [
-  { title: "Page publique personnalisee", text: "Une URL unique /mariage/vos-prenoms accessible partout." },
+  { title: "Page publique personnalisee", text: "Une URL unique /event/vos-prenoms accessible partout." },
   { title: "Compte a rebours", text: "Le decompte jusqu'au grand jour, en direct." },
   { title: "RSVP integre", text: "Vos invites confirment leur presence en un clic." },
   { title: "Partage WhatsApp", text: "Un message pret a envoyer avec apercu et image." },
@@ -40,7 +41,7 @@ export default function HomePage() {
               Creer mon invitation
             </Link>
             <Link
-              href="/mariage/alioune-fatou"
+              href={weddingPath("alioune-fatou")}
               className="rounded-lg border border-neutral-300 px-8 py-3.5 text-base font-medium text-neutral-800 hover:bg-neutral-50"
             >
               Voir un exemple
