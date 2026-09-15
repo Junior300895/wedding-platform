@@ -127,10 +127,12 @@ export function WeddingTemplate({
         )}
       </section>
 
-      {/* MOT DES MARIES — une seule ligne tenue, rien autour */}
+      {/* MOT DES MARIES — le texte est rendu tel qu'il a ete saisi :
+          whitespace-pre-line conserve les retours a la ligne et les lignes
+          vides, que le HTML reduirait sinon a une simple espace. */}
       {wedding.message && (
         <Section className="pb-0 sm:pb-0">
-          <p className="mx-auto max-w-xl text-balance text-center font-serif text-xl leading-relaxed sm:text-2xl">
+          <p className="mx-auto max-w-xl whitespace-pre-line text-center font-serif text-xl leading-relaxed sm:text-2xl">
             {wedding.message}
           </p>
         </Section>

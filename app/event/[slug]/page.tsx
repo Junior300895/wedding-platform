@@ -34,10 +34,14 @@ export async function generateMetadata({
   if (!wedding) return { title: "Invitation introuvable" };
 
   const title = `${wedding.partnerOne} & ${wedding.partnerTwo} — Notre mariage`;
-  const description =
+  // Les sauts de ligne du message sont conserves sur la page, mais pas dans
+  // l'apercu WhatsApp ou Google, qui attend une seule phrase continue.
+  const rawDescription =
     wedding.seoDescription ??
     wedding.message ??
     `${wedding.partnerOne} & ${wedding.partnerTwo} vous invitent a celebrer leur mariage.`;
+  const flat = rawDescription.replace(/\s+/g, " ").trim();
+  const description = flat.length > 200 ? `${flat.slice(0, 197).trimEnd()}...` : flat;
   const cover =
     wedding.photos.find((p) => p.isCover)?.url ??
     wedding.photos[0]?.url ??
