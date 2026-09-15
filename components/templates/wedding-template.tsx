@@ -94,7 +94,8 @@ export function WeddingTemplate({
 
         <div className="relative animate-fade-in-up">
           <p className={`text-[0.7rem] uppercase tracking-[0.35em] ${theme.accentSoft}`}>
-            Nous nous marions
+            {/* Nous nous marions */}
+            2A DECO PROGRAMME
           </p>
 
           <h1
