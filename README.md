@@ -12,7 +12,7 @@ documentation d'architecture Next.js Full Stack.
 | Langage         | TypeScript                     |
 | UI              | Tailwind CSS                   |
 | ORM             | Prisma                         |
-| Base de données | PostgreSQL                     |
+| Base de données | MySQL 8                        |
 | Validation      | Zod                            |
 | Auth            | Auth.js (NextAuth v5)          |
 | Médias          | Abstraction (local / Cloudinary / S3) |
@@ -37,7 +37,7 @@ documentation d'architecture Next.js Full Stack.
 ### 1. Prérequis
 
 - Node.js 18.18+ (idéalement 20+)
-- Une base PostgreSQL (locale ou managée : Neon, Supabase, Railway…)
+- Une base MySQL 8 (locale, par exemple via WAMP, ou managée)
 
 ### 2. Installation
 

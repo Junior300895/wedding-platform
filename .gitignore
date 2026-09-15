@@ -36,3 +36,6 @@ yarn-error.log*
 
 # uploads (dev local storage)
 /public/uploads
+
+# export de donnees (emails, hashs de mots de passe) : ne jamais committer
+/prisma/data-export

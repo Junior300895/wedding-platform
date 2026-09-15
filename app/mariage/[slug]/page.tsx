@@ -103,7 +103,12 @@ export default async function PublicWeddingPage({
       mapUrl: e.mapUrl,
       startsAt: e.startsAt,
     })),
-    photos: wedding.photos.map((p) => ({ id: p.id, url: p.url, isCover: p.isCover })),
+    photos: wedding.photos.map((p) => ({
+      id: p.id,
+      url: p.url,
+      thumbnailUrl: p.thumbnailUrl,
+      isCover: p.isCover,
+    })),
   };
 
   return <WeddingTemplate wedding={data} publicUrl={publicUrl} qrDataUrl={qrDataUrl} />;

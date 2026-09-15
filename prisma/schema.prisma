@@ -1,12 +1,16 @@
 // Schema Prisma - Plateforme de faire-part de mariage
-// Base : PostgreSQL
+// Base : MySQL 8
+//
+// Sous MySQL, un `String` sans annotation devient VARCHAR(191). Tout champ
+// pouvant depasser 191 caracteres (messages, notes, URL) porte donc un type
+// explicite : @db.Text pour le texte libre, @db.VarChar(n) pour les URL.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -91,23 +95,23 @@ model User {
 // =====================================================
 
 model Wedding {
-  id          String        @id @default(cuid())
-  slug        String        @unique
-  partnerOne  String
-  partnerTwo  String
-  weddingDate DateTime
-  weddingTime String? // ex "16:00"
-  message     String?
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  partnerOne   String
+  partnerTwo   String
+  weddingDate  DateTime
+  weddingTime  String? // ex "16:00"
+  message      String?       @db.Text
   contactPhone String?
-  status      WeddingStatus @default(DRAFT)
-  planTier    PlanTier      @default(ESSENTIEL)
+  status       WeddingStatus @default(DRAFT)
+  planTier     PlanTier      @default(ESSENTIEL)
 
   // SEO / partage
-  coverImageUrl String?
-  seoDescription String?
+  coverImageUrl  String? @db.VarChar(1024)
+  seoDescription String? @db.Text
 
   userId     String
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   templateId String?
   template   WeddingTemplate? @relation(fields: [templateId], references: [id])
 
@@ -132,22 +136,22 @@ model Wedding {
 // =====================================================
 
 model WeddingEvent {
-  id        String    @id @default(cuid())
+  id        String  @id @default(cuid())
   weddingId String
-  wedding   Wedding   @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
 
   type      EventType @default(CEREMONY)
   title     String
   venueName String
-  address   String?
+  address   String?   @db.VarChar(255)
   latitude  Float?
   longitude Float?
-  mapUrl    String?
+  mapUrl    String?   @db.VarChar(2048)
   startsAt  DateTime?
-  notes     String?
+  notes     String?   @db.Text
   sortOrder Int       @default(0)
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([weddingId])
 }
@@ -157,13 +161,13 @@ model WeddingEvent {
 // =====================================================
 
 model WeddingPhoto {
-  id           String  @id @default(cuid())
-  weddingId    String
-  wedding      Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  weddingId String
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
 
-  storageKey   String
-  url          String
-  thumbnailUrl String?
+  storageKey   String  @db.VarChar(512)
+  url          String  @db.VarChar(1024)
+  thumbnailUrl String? @db.VarChar(1024)
   width        Int?
   height       Int?
   mimeType     String?
@@ -171,7 +175,7 @@ model WeddingPhoto {
   sortOrder    Int     @default(0)
   isCover      Boolean @default(false)
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([weddingId])
 }
@@ -181,15 +185,15 @@ model WeddingPhoto {
 // =====================================================
 
 model WeddingTemplate {
-  id          String    @id @default(cuid())
-  key         String    @unique // ex "classic", "minimal"
+  id          String   @id @default(cuid())
+  key         String   @unique // ex "classic", "minimal"
   name        String
-  description String?
-  style       String? // texte de presentation
-  previewUrl  String?
-  minTier     PlanTier  @default(ESSENTIEL) // offre minimale requise
-  isActive    Boolean   @default(true)
-  sortOrder   Int       @default(0)
+  description String?  @db.Text
+  style       String?  @db.Text // texte de presentation
+  previewUrl  String?  @db.VarChar(1024)
+  minTier     PlanTier @default(ESSENTIEL) // offre minimale requise
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
 
   weddings Wedding[]
 
@@ -201,15 +205,15 @@ model WeddingTemplate {
 // =====================================================
 
 model Guest {
-  id        String       @id @default(cuid())
+  id        String  @id @default(cuid())
   weddingId String
-  wedding   Wedding      @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
 
   name      String
   phone     String?
   response  RsvpResponse @default(YES)
   partySize Int          @default(1)
-  message   String?
+  message   String?      @db.Text
 
   createdAt DateTime @default(now())
 
@@ -221,18 +225,18 @@ model Guest {
 // =====================================================
 
 model Order {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   weddingId String?
-  wedding   Wedding?    @relation(fields: [weddingId], references: [id])
+  wedding   Wedding? @relation(fields: [weddingId], references: [id])
   userId    String
-  user      User        @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  planTier  PlanTier
-  amount    Int // en centimes / plus petite unite (XOF: unite entiere)
-  currency  String      @default("XOF")
-  status    OrderStatus @default(PENDING)
+  planTier PlanTier
+  amount   Int // en centimes / plus petite unite (XOF: unite entiere)
+  currency String      @default("XOF")
+  status   OrderStatus @default(PENDING)
 
-  payments  Payment[]
+  payments Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -246,19 +250,19 @@ model Order {
 // =====================================================
 
 model Payment {
-  id           String        @id @default(cuid())
-  orderId      String
-  order        Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  provider     String // ex "wave", "orange-money", "stripe"
-  providerRef  String?
-  amount       Int
-  currency     String        @default("XOF")
-  status       PaymentStatus @default(INITIATED)
-  rawPayload   Json?
+  provider    String // ex "wave", "orange-money", "stripe"
+  providerRef String?
+  amount      Int
+  currency    String        @default("XOF")
+  status      PaymentStatus @default(INITIATED)
+  rawPayload  Json?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orderId])
 }
@@ -268,9 +272,9 @@ model Payment {
 // =====================================================
 
 model ShareEvent {
-  id        String       @id @default(cuid())
+  id        String  @id @default(cuid())
   weddingId String
-  wedding   Wedding      @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
 
   channel   ShareChannel
   createdAt DateTime     @default(now())

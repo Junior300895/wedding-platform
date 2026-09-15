@@ -44,7 +44,7 @@ export function Gallery({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={p.url}
+              src={p.thumbnailUrl ?? p.url}
               alt={`${coupleName} — photo ${i + 1}`}
               loading="lazy"
               decoding="async"

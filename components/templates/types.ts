@@ -1,4 +1,10 @@
-export type PublicPhoto = { id: string; url: string; isCover: boolean };
+export type PublicPhoto = {
+  id: string;
+  url: string;
+  /** Vignette carree optimisee (Cloudinary) ; absente pour les photos locales. */
+  thumbnailUrl?: string | null;
+  isCover: boolean;
+};
 
 export type PublicEvent = {
   id: string;

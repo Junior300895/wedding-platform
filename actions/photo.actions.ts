@@ -36,19 +36,35 @@ export async function uploadPhotoAction(
   if (!check.ok) return { error: check.error };
 
   const count = await db.weddingPhoto.count({ where: { weddingId } });
-  const stored = await storage.upload(file, `weddings/${weddingId}`);
 
-  await db.weddingPhoto.create({
-    data: {
-      weddingId,
-      storageKey: stored.storageKey,
-      url: stored.url,
-      mimeType: stored.mimeType,
-      size: stored.size,
-      sortOrder: count,
-      isCover: count === 0, // 1ere photo = couverture par defaut
-    },
-  });
+  let stored;
+  try {
+    stored = await storage.upload(file, `weddings/${weddingId}`);
+  } catch (error) {
+    console.error("Echec de l'envoi de la photo :", error);
+    return { error: "L'envoi de la photo a echoue. Reessayez dans un instant." };
+  }
+
+  try {
+    await db.weddingPhoto.create({
+      data: {
+        weddingId,
+        storageKey: stored.storageKey,
+        url: stored.url,
+        thumbnailUrl: stored.thumbnailUrl ?? null,
+        width: stored.width ?? null,
+        height: stored.height ?? null,
+        mimeType: stored.mimeType,
+        size: stored.size,
+        sortOrder: count,
+        isCover: count === 0, // 1ere photo = couverture par defaut
+      },
+    });
+  } catch (error) {
+    // Le fichier est deja stocke : on le retire pour ne pas laisser d'orphelin.
+    await storage.delete(stored.storageKey).catch(() => undefined);
+    throw error;
+  }
 
   revalidatePath(`/dashboard/mariage/${weddingId}`);
   revalidatePath(`/mariage/${wedding.slug}`);
@@ -66,8 +82,12 @@ export async function deletePhotoAction(photoId: string) {
     throw new Error("Acces refuse");
   }
 
-  await storage.delete(photo.storageKey);
+  // La base d'abord : une panne reseau vers Cloudinary ne doit pas empecher
+  // de retirer la photo de l'invitation.
   await db.weddingPhoto.delete({ where: { id: photoId } });
+  await storage.delete(photo.storageKey).catch((error) => {
+    console.error("Fichier non supprime du stockage :", photo.storageKey, error);
+  });
 
   revalidatePath(`/dashboard/mariage/${photo.wedding.id}`);
   revalidatePath(`/mariage/${photo.wedding.slug}`);
