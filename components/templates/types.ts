@@ -61,7 +61,22 @@ export type Theme = {
   fieldError: string;
   heroFont: string; // font-serif | font-sans
   heroBgClass: string; // degrade / couleur du hero
-  /** Voile pose sur la photo de couverture pour garder le titre lisible. */
+  /**
+   * Voile leger sur toute la photo : harmonise la teinte et fait fondre le
+   * bas du hero dans la page. Volontairement discret.
+   */
   heroScrim: string;
+  /**
+   * Halo local, centre sur le titre, dans la couleur de fond du theme.
+   * C'est lui qui garantit le contraste : le resultat ne depend plus de la
+   * photo envoyee par les maries, seulement de cette couche.
+   */
+  heroTextScrim: string;
   divider: string; // ornement de cloture, utilise une seule fois
+  /**
+   * Teintes des confettis, en hexadecimal : elles sont posees en style
+   * inline (une couleur tiree au sort par particule), donc des classes
+   * Tailwind ne conviendraient pas ici.
+   */
+  confetti: string[];
 };

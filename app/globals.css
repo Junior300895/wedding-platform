@@ -17,8 +17,54 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Confettis de l'invitation publique.
+   L'animation ne touche que transform et opacity : composite par le GPU,
+   sans reflow ni repaint, et sans une ligne de JavaScript. */
+@keyframes wedding-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.6;
+  }
+  92% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  border-radius: 9999px;
+  animation-name: wedding-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
 /* Respect de prefers-reduced-motion : plus d'animation d'entree ni de
-   defilement anime pour qui a demande a en etre dispense. */
+   defilement anime pour qui a demande a en etre dispense.
+   Les confettis sont retires, pas ralentis : une animation infinie dont on
+   ecrase la duree ne s'arrete pas, elle clignote. */
+@media (prefers-reduced-motion: reduce) {
+  .confetti-layer {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

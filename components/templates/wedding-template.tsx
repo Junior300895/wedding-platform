@@ -1,5 +1,6 @@
 import type { PublicWedding, Theme } from "./types";
 import { getTheme, getAccentButton } from "./registry";
+import { Confetti } from "./confetti";
 import { Countdown } from "./countdown";
 import { Itinerary } from "./itinerary";
 import { Gallery } from "./gallery";
@@ -64,6 +65,10 @@ export function WeddingTemplate({
 
   return (
     <div className={`${theme.bg} ${theme.text} min-h-screen`}>
+      {/* Confettis : couche fixe au-dessus de la page, inerte au clic et
+          masquee pour qui a demande moins de mouvement. */}
+      <Confetti colors={theme.confetti} />
+
       {/* ---------------------------------------------------------------
           HERO — la photo porte l'ouverture, le voile garde le titre lisible
       --------------------------------------------------------------- */}
@@ -79,7 +84,11 @@ export function WeddingTemplate({
               fetchPriority="high"
               className="absolute inset-0 h-full w-full object-cover"
             />
+            {/* Voile leger : teinte la photo et la fond dans la page. */}
             <div className={`absolute inset-0 ${theme.heroScrim}`} />
+            {/* Halo local : ne protege que la zone du titre, pour que la
+                photo reste visible tout autour. */}
+            <div className={`absolute inset-0 ${theme.heroTextScrim}`} />
           </>
         )}
 
