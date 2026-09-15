@@ -7,9 +7,21 @@ const TYPE_LABELS: Record<string, string> = {
   OTHER: "Evenement",
 };
 
-function mapHref(ev: PublicEvent): string {
-  if (ev.mapUrl) return ev.mapUrl;
-  const query = [ev.venueName, ev.address].filter(Boolean).join(" ");
+/**
+ * Lien d'itineraire, ou null quand il n'y a rien pour s'orienter.
+ *
+ * Le nom du lieu seul ne suffit pas : une recherche Google Maps sur
+ * "Partage et echanges de vues" n'emmene nulle part. Il faut un lien
+ * explicite ou une adresse.
+ */
+function mapHref(ev: PublicEvent): string | null {
+  const mapUrl = ev.mapUrl?.trim();
+  if (mapUrl) return mapUrl;
+
+  const address = ev.address?.trim();
+  if (!address) return null;
+
+  const query = [ev.venueName?.trim(), address].filter(Boolean).join(" ");
   return `https://maps.google.com/?q=${encodeURIComponent(query)}`;
 }
 
@@ -34,6 +46,7 @@ export function Itinerary({
       {events.map((ev, index) => {
         const isLast = index === events.length - 1;
         const offDay = ev.startsAt && !isSameDay(ev.startsAt, weddingDate);
+        const href = mapHref(ev);
 
         return (
           <li
@@ -85,16 +98,20 @@ export function Itinerary({
                   <p className="mt-0.5 text-sm opacity-70">{ev.address}</p>
                 )}
                 {/* Action principale pour l'invite : cible tactile pleine
-                    hauteur, un mariage se rejoint depuis un telephone. */}
-                <a
-                  href={mapHref(ev)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-full border px-5 text-sm font-medium ${theme.accent} ${theme.surface} ${theme.line} transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current`}
-                >
-                  Ouvrir l&apos;itineraire
-                  <span aria-hidden="true">&rarr;</span>
-                </a>
+                    hauteur, un mariage se rejoint depuis un telephone.
+                    Masquee faute d'adresse ou de lien : mieux vaut aucun
+                    bouton qu'un bouton qui n'emmene nulle part. */}
+                {href && (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-full border px-5 text-sm font-medium ${theme.accent} ${theme.surface} ${theme.line} transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current`}
+                  >
+                    Ouvrir l&apos;itineraire
+                    <span aria-hidden="true">&rarr;</span>
+                  </a>
+                )}
               </div>
             </div>
           </li>
