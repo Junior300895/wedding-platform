@@ -19,7 +19,7 @@ function formatDate(date: Date, options: Intl.DateTimeFormatOptions) {
 }
 
 /** Monogramme du sceau : initiale de chaque prenom. */
-function initial(name: string) {
+export function initial(name: string) {
   return Array.from(name.trim())[0]?.toUpperCase() ?? "";
 }
 

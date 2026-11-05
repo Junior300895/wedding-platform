@@ -2,7 +2,7 @@ import type { PublicWedding, Theme } from "./types";
 import { getTheme, getAccentButton } from "./registry";
 import { Confetti } from "./confetti";
 import { Countdown } from "./countdown";
-import { EnvelopeIntro, sans, script } from "./envelope-intro";
+import { EnvelopeIntro, initial, sans, script } from "./envelope-intro";
 import { SectionNav } from "./section-nav";
 import { VenueMap } from "./venue-map";
 import { Itinerary, mapHref } from "./itinerary";
@@ -68,6 +68,12 @@ export function WeddingTemplate({
     ? null
     : (coverMedia?.url ?? images[0]?.url ?? wedding.coverImageUrl ?? null);
   const galleryPhotos = images.filter((p) => p.url !== cover);
+
+  // Les tuiles affichent les heures : la cible est l'heure de l'evenement, pas
+  // minuit. Dakar est a UTC, comme la date enregistree.
+  const countdownTarget = wedding.weddingTime
+    ? `${new Date(wedding.weddingDate).toISOString().slice(0, 10)}T${wedding.weddingTime}:00Z`
+    : new Date(wedding.weddingDate).toISOString();
 
   // Un lieu par itineraire : seuls ceux ou l'on peut se rendre sont listes.
   const venues = wedding.events.flatMap((event) => {
@@ -232,12 +238,22 @@ export function WeddingTemplate({
       )}
 
       {/* COMPTE A REBOURS — volontairement discret */}
-      <section className="px-5 pb-20 sm:pb-28">
-        <Countdown
-          date={new Date(wedding.weddingDate).toISOString()}
-          accent={theme.accent}
-          accentSoft={theme.accentSoft}
-        />
+      <section
+        className={`${sans.className} relative overflow-hidden px-5 py-10 sm:py-14`}
+      >
+        {/* Monogramme en filigrane, derriere les tuiles. */}
+        <div
+          aria-hidden="true"
+          className={`${script.className} pointer-events-none absolute inset-0 flex select-none items-center justify-center whitespace-nowrap text-[clamp(8rem,24vw,15rem)] leading-none text-[#0f2d4e]/10`}
+        >
+          {initial(wedding.partnerOne)}&amp;{initial(wedding.partnerTwo)}
+        </div>
+        <div className="relative">
+          <p className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.28em] text-[#a98f5c] sm:mb-5 sm:text-xs">
+            Compte à rebours
+          </p>
+          <Countdown date={countdownTarget} accent={theme.accent} />
+        </div>
       </section>
 
       {/* GALERIE */}

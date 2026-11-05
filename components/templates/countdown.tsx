@@ -15,19 +15,29 @@ function diff(target: Date) {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+function Tile({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="flex aspect-square flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[#174f8a] to-[#0b2c4d] text-white shadow-[0_10px_20px_rgba(20,35,50,0.25)] sm:rounded-2xl">
+      <span className="text-2xl font-medium tabular-nums leading-none sm:text-3xl">
+        {pad(value)}
+      </span>
+      <span className="mt-1 text-[0.55rem] uppercase tracking-[0.1em] text-[#a9c8e8] sm:mt-1.5 sm:text-[0.7rem]">
+        {label}
+      </span>
+    </div>
+  );
+}
+
 /**
- * Compte a rebours volontairement discret : l'invite vient chercher un lieu
- * et une heure, pas un chronometre. Chiffres en chasse fixe (tabular-nums)
- * pour que la ligne ne tressaute pas a chaque seconde.
+ * Compte a rebours en quatre tuiles. Chiffres en chasse fixe (tabular-nums)
+ * pour qu'ils ne tressautent pas a chaque seconde.
  */
 export function Countdown({
   date,
   accent,
-  accentSoft,
 }: {
   date: string;
   accent: string;
-  accentSoft: string;
 }) {
   const [t, setT] = useState<ReturnType<typeof diff> | null>(null);
 
@@ -39,7 +49,8 @@ export function Countdown({
   }, [date]);
 
   // Rien au premier rendu serveur : evite un decalage d'hydratation.
-  if (!t) return <div className="h-16" aria-hidden="true" />;
+  // La hauteur est reservee pour que la page ne saute pas a l'arrivee des tuiles.
+  if (!t) return <div className="h-[4.25rem] sm:h-[5.5rem]" aria-hidden="true" />;
 
   if (t.done) {
     return (
@@ -50,21 +61,15 @@ export function Countdown({
   }
 
   return (
-    <p className="text-center">
-      <span className={`text-xs uppercase tracking-[0.25em] ${accentSoft}`}>
-        Plus que
-      </span>
-      <span className="mt-2 block font-serif text-3xl">
-        {t.days > 0
-          ? `${t.days} ${t.days > 1 ? "jours" : "jour"}`
-          : "quelques heures"}
-      </span>
-      <span
-        className="mt-1 block font-sans text-sm tabular-nums tracking-widest opacity-55"
-        aria-hidden="true"
-      >
-        {pad(t.hours)}:{pad(t.minutes)}:{pad(t.seconds)}
-      </span>
-    </p>
+    <div
+      role="img"
+      aria-label={`Il reste ${t.days} jours, ${t.hours} heures et ${t.minutes} minutes`}
+      className="mx-auto grid max-w-[19rem] grid-cols-4 gap-2 sm:max-w-[25rem] sm:gap-3"
+    >
+      <Tile value={t.days} label="Jours" />
+      <Tile value={t.hours} label="Heures" />
+      <Tile value={t.minutes} label="Min" />
+      <Tile value={t.seconds} label="Sec" />
+    </div>
   );
 }
