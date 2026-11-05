@@ -7,6 +7,16 @@ import type { PublicPhoto } from "./types";
 const SWIPE_THRESHOLD = 50;
 /** Temps de pose de chaque photo quand la galerie defile seule. */
 const AUTOPLAY_MS = 2500;
+/** Premier changement, des que la galerie arrive a l'ecran. */
+const FIRST_AUTOPLAY_MS = 1000;
+
+/**
+ * Tirage de la pile : une largeur de 900 px suffit a cette taille d'affichage.
+ * La visionneuse garde la grande image ; une URL locale reste inchangee.
+ */
+function stackSrc(url: string) {
+  return url.includes("res.cloudinary.com") ? url.replace("w_2000", "w_900") : url;
+}
 
 /** Pose des photos dans la pile : celle du dessus, puis les deux suivantes. */
 const STACK_POSES = [
@@ -42,9 +52,11 @@ export function Gallery({
   const [leaving, setLeaving] = useState<PublicPhoto | null>(null);
   const [enteringId, setEnteringId] = useState<string | null>(null);
   // Le defilement automatique attend que la galerie soit a l'ecran et s'arrete
-  // tant que la souris ou le clavier est sur elle.
+  // tant que le clavier est sur elle. Le survol ne l'arrete pas : la pile occupe
+  // le centre de l'ecran, la souris s'y trouve le plus souvent sans le vouloir.
   const [inView, setInView] = useState(false);
   const [paused, setPaused] = useState(false);
+  const hasAdvanced = useRef(false);
   const stackRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   // Un glissement se termine par un clic synthetique sur mobile : sans ce
@@ -89,10 +101,15 @@ export function Gallery({
   // Precharge les photos voisines : le passage a la suivante est immediat.
   useEffect(() => {
     if (count < 2) return;
-    const center = index ?? active;
-    for (const i of [(center + 1) % count, (center - 1 + count) % count]) {
-      const img = new Image();
-      img.src = photos[i].url;
+    if (index !== null) {
+      for (const i of [(index + 1) % count, (index - 1 + count) % count]) {
+        new Image().src = photos[i].url;
+      }
+      return;
+    }
+    // Pile : la photo qui va entrer et celle d'avant sont pretes a l'avance.
+    for (const i of [(active + 3) % count, (active - 1 + count) % count]) {
+      new Image().src = stackSrc(photos[i].url);
     }
   }, [index, active, count, photos]);
 
@@ -116,7 +133,7 @@ export function Gallery({
     if (!element) return;
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.4 }
+      { threshold: 0.25 }
     );
     observer.observe(element);
     return () => observer.disconnect();
@@ -127,7 +144,13 @@ export function Gallery({
   useEffect(() => {
     if (count < 2 || !inView || paused || open) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setTimeout(stackNext, AUTOPLAY_MS);
+    const timer = window.setTimeout(
+      () => {
+        hasAdvanced.current = true;
+        stackNext();
+      },
+      hasAdvanced.current ? AUTOPLAY_MS : FIRST_AUTOPLAY_MS
+    );
     return () => window.clearTimeout(timer);
   }, [active, count, inView, paused, open, stackNext]);
 
@@ -173,12 +196,6 @@ export function Gallery({
           sur la photo du dessus. */}
       <div
         className="relative mx-auto w-fit px-2 sm:px-20"
-        onPointerEnter={(e) => {
-          if (e.pointerType === "mouse") setPaused(true);
-        }}
-        onPointerLeave={(e) => {
-          if (e.pointerType === "mouse") setPaused(false);
-        }}
         // Focus clavier seulement : un bouton touche ou clique garde le focus,
         // ce qui arreterait le defilement pour de bon.
         onFocus={(e) => {
@@ -213,10 +230,9 @@ export function Gallery({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={photo.url}
+                src={stackSrc(photo.url)}
                 alt={depth === 0 ? `${coupleName} — photo ${position + 1}` : ""}
-                loading="lazy"
-                decoding="async"
+                decoding="sync"
                 draggable={false}
                 className="h-full w-full select-none rounded object-cover"
               />
@@ -232,7 +248,7 @@ export function Gallery({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={leaving.url}
+                src={stackSrc(leaving.url)}
                 alt=""
                 draggable={false}
                 className="h-full w-full select-none rounded object-cover"
