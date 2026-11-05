@@ -55,6 +55,209 @@ body {
   will-change: transform, opacity;
 }
 
+/* Ecran d'enveloppe de l'invitation publique.
+   Palette propre a cet ecran, commune a tous les templates. Les durees
+   sont alignees sur components/templates/envelope-gate.tsx. */
+.envelope-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 2.5vh, 1.5rem);
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
+  color: #2b2b2b;
+  text-align: center;
+  background: linear-gradient(160deg, #fbf6ea 0%, #f3e8d5 50%, #e6d2b0 100%);
+  transition: opacity 0.7s ease;
+}
+.envelope-intro[data-stage="leaving"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.envelope-header {
+  max-width: 100%;
+}
+.envelope-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: clamp(0.75rem, 3vh, 1.75rem);
+}
+.envelope-pill {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0.55rem 1.2rem;
+  border-radius: 9999px;
+  color: #fff;
+  font-size: clamp(0.68rem, 1.8vw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.envelope-pill-warm {
+  background: #c56a3e;
+}
+.envelope-pill-blue {
+  background: #174f8a;
+}
+.envelope-eyebrow {
+  color: #8f7442;
+  font-size: clamp(0.72rem, 2vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.envelope-ornament {
+  margin-top: 0.4rem;
+  color: #bfa775;
+}
+.envelope-names {
+  margin-top: 0.4rem;
+  color: #0f2d4e;
+  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  line-height: 1.15;
+}
+.envelope-names span {
+  color: #c56a3e;
+}
+.envelope-date {
+  margin-top: 0.5rem;
+  font-size: clamp(0.8rem, 2.2vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.envelope-date strong {
+  color: #c56a3e;
+  font-size: 1.4em;
+  font-weight: 700;
+}
+
+.envelope-button {
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: none;
+}
+.envelope-button:focus-visible {
+  outline: 2px solid #174f8a;
+  outline-offset: 2.25rem;
+}
+.envelope-scene {
+  --envelope-w: min(78vw, 60vh, 435px);
+  position: relative;
+  display: block;
+  width: var(--envelope-w);
+  height: calc(var(--envelope-w) * 0.62);
+  margin: calc(var(--envelope-w) * 0.1) 0;
+  transition: transform 0.25s ease;
+}
+.envelope-button:hover .envelope-scene {
+  transform: translateY(-3px);
+}
+.envelope-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: #0b1d2c;
+  box-shadow: 0 24px 50px rgba(70, 50, 20, 0.28);
+  perspective: 1000px;
+}
+.envelope-pocket,
+.envelope-flap,
+.envelope-card,
+.envelope-seal {
+  position: absolute;
+  display: block;
+}
+.envelope-pocket {
+  inset: 0;
+  z-index: 2;
+}
+.envelope-pocket-left {
+  background: #10243e;
+  clip-path: polygon(0 0, 50% 50%, 0 100%);
+}
+.envelope-pocket-right {
+  background: #10243e;
+  clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+}
+.envelope-pocket-bottom {
+  background: linear-gradient(#0a1a26, #0b1d2c);
+  clip-path: polygon(0 100%, 50% 50%, 100% 100%);
+}
+.envelope-flap {
+  inset: 0 0 50%;
+  z-index: 3;
+  background: linear-gradient(#26476b, #1f3d5e);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.7s ease-in-out, z-index 0s 0.35s;
+}
+.envelope-card {
+  inset: 6% 6% 6%;
+  z-index: 1;
+  background: #fbf6ea;
+  transition: transform 0.7s ease-out 0.6s;
+}
+.envelope-seal {
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  width: 22%;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 9999px;
+  color: #fdf3e4;
+  font-size: calc(var(--envelope-w) * 0.075);
+  background: radial-gradient(circle at 35% 25%, #e0946b, #c56a3e 55%, #a9542c);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.envelope-flowers {
+  position: absolute;
+  z-index: 5;
+  width: 50%;
+  pointer-events: none;
+}
+.envelope-flowers-top {
+  top: -24%;
+  left: -14%;
+}
+.envelope-flowers-bottom {
+  right: -14%;
+  bottom: -24%;
+  transform: rotate(180deg);
+}
+.envelope-intro[data-stage]:not([data-stage="closed"]) .envelope-seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.7);
+}
+.envelope-intro[data-stage]:not([data-stage="closed"]) .envelope-flap {
+  z-index: 0;
+  transform: rotateX(180deg);
+}
+.envelope-intro[data-stage]:not([data-stage="closed"]) .envelope-card {
+  transform: translateY(-45%);
+}
+.envelope-hint {
+  color: #174f8a;
+  font-size: clamp(0.72rem, 1.9vw, 1rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 /* Respect de prefers-reduced-motion : plus d'animation d'entree ni de
    defilement anime pour qui a demande a en etre dispense.
    Les confettis sont retires, pas ralentis : une animation infinie dont on

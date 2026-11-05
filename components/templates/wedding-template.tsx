@@ -2,6 +2,7 @@ import type { PublicWedding, Theme } from "./types";
 import { getTheme, getAccentButton } from "./registry";
 import { Confetti } from "./confetti";
 import { Countdown } from "./countdown";
+import { EnvelopeIntro } from "./envelope-intro";
 import { Itinerary } from "./itinerary";
 import { Gallery } from "./gallery";
 import { RsvpForm } from "./rsvp-form";
@@ -65,6 +66,8 @@ export function WeddingTemplate({
 
   return (
     <div className={`${theme.bg} ${theme.text} min-h-screen`}>
+      <EnvelopeIntro wedding={wedding} />
+
       {/* Confettis : couche fixe au-dessus de la page, inerte au clic et
           masquee pour qui a demande moins de mouvement. */}
       <Confetti colors={theme.confetti} />
