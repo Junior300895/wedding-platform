@@ -29,6 +29,7 @@ export type PublicWedding = {
   weddingTime: string | null;
   message: string | null;
   contactPhone: string | null;
+  rsvpEnabled: boolean;
   coverImageUrl: string | null;
   events: PublicEvent[];
   photos: PublicPhoto[];

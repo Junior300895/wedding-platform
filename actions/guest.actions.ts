@@ -52,10 +52,14 @@ export async function createGuestAction(
   // Le mariage doit exister et etre publie
   const wedding = await db.wedding.findUnique({
     where: { id: data.weddingId },
-    select: { id: true, status: true, slug: true },
+    select: { id: true, status: true, slug: true, rsvpEnabled: true },
   });
   if (!wedding || wedding.status !== "PUBLISHED") {
     return { error: "Cette invitation n'est plus disponible." };
+  }
+  // Une page encore ouverte ou en cache peut afficher l'ancien formulaire.
+  if (!wedding.rsvpEnabled) {
+    return { error: "Les reponses ne sont plus acceptees pour cette invitation." };
   }
 
   await db.guest.create({

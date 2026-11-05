@@ -15,10 +15,13 @@ export async function POST(req: NextRequest) {
   const data = parsed.data;
   const wedding = await db.wedding.findUnique({
     where: { id: data.weddingId },
-    select: { status: true },
+    select: { status: true, rsvpEnabled: true },
   });
   if (!wedding || wedding.status !== "PUBLISHED") {
     return NextResponse.json({ error: "Invitation indisponible" }, { status: 404 });
+  }
+  if (!wedding.rsvpEnabled) {
+    return NextResponse.json({ error: "Reponses fermees" }, { status: 403 });
   }
 
   const guest = await db.guest.create({

@@ -263,22 +263,24 @@ export function WeddingTemplate({
       )}
 
       {/* RSVP — la demande, posee sur une surface pleine */}
-      <Section>
-        <div
-          className={`mx-auto max-w-xl rounded-3xl border p-8 sm:p-12 ${theme.surface} ${theme.line}`}
-        >
-          <SectionHead
-            eyebrow="Reponse souhaitee"
-            title="Confirmez votre presence"
-            theme={theme}
-          />
-          <RsvpForm
-            weddingId={wedding.id}
-            accentBtn={accentBtn}
-            theme={theme}
-          />
-        </div>
-      </Section>
+      {wedding.rsvpEnabled && (
+        <Section>
+          <div
+            className={`mx-auto max-w-xl rounded-3xl border p-8 sm:p-12 ${theme.surface} ${theme.line}`}
+          >
+            <SectionHead
+              eyebrow="Reponse souhaitee"
+              title="Confirmez votre presence"
+              theme={theme}
+            />
+            <RsvpForm
+              weddingId={wedding.id}
+              accentBtn={accentBtn}
+              theme={theme}
+            />
+          </div>
+        </Section>
+      )}
 
       {/* PARTAGE */}
       <Section className="pt-0 sm:pt-0">

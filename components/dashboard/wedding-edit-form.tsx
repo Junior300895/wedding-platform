@@ -17,6 +17,7 @@ type Wedding = {
   message: string | null;
   contactPhone: string | null;
   templateId: string | null;
+  rsvpEnabled: boolean;
 };
 
 export function WeddingEditForm({ wedding }: { wedding: Wedding }) {
@@ -63,6 +64,24 @@ export function WeddingEditForm({ wedding }: { wedding: Wedding }) {
         <Label htmlFor="contactPhone">Telephone de contact</Label>
         <Input id="contactPhone" name="contactPhone" defaultValue={wedding.contactPhone ?? ""} />
       </div>
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 p-4">
+        <input
+          type="checkbox"
+          name="rsvpEnabled"
+          defaultChecked={wedding.rsvpEnabled}
+          className="mt-0.5 h-4 w-4"
+        />
+        <span>
+          <span className="block text-sm font-medium text-neutral-900">
+            Afficher la confirmation de presence (RSVP)
+          </span>
+          <span className="mt-0.5 block text-xs text-neutral-500">
+            Decochee, la section disparait de l&apos;invitation et plus aucune reponse
+            n&apos;est acceptee. Les reponses deja recues sont conservees.
+          </span>
+        </span>
+      </label>
 
       {state?.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>

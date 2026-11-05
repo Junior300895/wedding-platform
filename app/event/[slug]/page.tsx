@@ -101,6 +101,7 @@ export default async function PublicWeddingPage({
     weddingTime: wedding.weddingTime,
     message: wedding.message,
     contactPhone: wedding.contactPhone,
+    rsvpEnabled: wedding.rsvpEnabled,
     coverImageUrl: wedding.coverImageUrl,
     templateKey,
     events: wedding.events.map((e) => ({

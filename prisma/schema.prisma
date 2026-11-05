@@ -105,6 +105,8 @@ model Wedding {
   contactPhone String?
   status       WeddingStatus @default(DRAFT)
   planTier     PlanTier      @default(ESSENTIEL)
+  // Affiche la section "Confirmez votre presence" et accepte les reponses.
+  rsvpEnabled  Boolean       @default(true)
 
   // SEO / partage
   coverImageUrl  String? @db.VarChar(1024)
