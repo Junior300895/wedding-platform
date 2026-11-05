@@ -6,7 +6,7 @@ import type { PublicPhoto } from "./types";
 /** Distance horizontale minimale (px) pour qu'un glissement change de photo. */
 const SWIPE_THRESHOLD = 50;
 /** Temps de pose de chaque photo quand la galerie defile seule. */
-const AUTOPLAY_MS = 4000;
+const AUTOPLAY_MS = 2500;
 
 /** Pose des photos dans la pile : celle du dessus, puis les deux suivantes. */
 const STACK_POSES = [
