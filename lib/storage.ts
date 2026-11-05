@@ -37,6 +37,11 @@ const MIME_EXTENSIONS: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
 };
+const VIDEO_EXTENSIONS: Record<string, string> = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+};
 const MAX_SIZE = 8 * 1024 * 1024; // 8 Mo
 
 export function validateImage(file: File): { ok: boolean; error?: string } {
@@ -51,6 +56,8 @@ export function validateImage(file: File): { ok: boolean; error?: string } {
 
 /** Prefixe des cles Cloudinary ; une cle sans prefixe est un fichier local. */
 const CLOUDINARY_PREFIX = "cloudinary:";
+/** Les videos ont leur propre prefixe : Cloudinary les supprime a part. */
+const CLOUDINARY_VIDEO_PREFIX = "cloudinary-video:";
 
 // ---------------------------------------------------------------------------
 // LOCAL (developpement)
@@ -62,7 +69,7 @@ class LocalStorage implements StorageProvider {
   async upload(file: File, folder: string): Promise<StoredFile> {
     // Extension deduite du type MIME valide, jamais du nom de fichier :
     // un nom comme "x./../../y" ferait sortir le fichier de /uploads.
-    const ext = MIME_EXTENSIONS[file.type] ?? "jpg";
+    const ext = MIME_EXTENSIONS[file.type] ?? VIDEO_EXTENSIONS[file.type] ?? "jpg";
     const key = `${folder}/${crypto.randomUUID()}.${ext}`;
     const dest = path.join(LOCAL_DIR, key);
     await mkdir(path.dirname(dest), { recursive: true });
@@ -176,6 +183,95 @@ class CloudinaryStorage implements StorageProvider {
 }
 
 // ---------------------------------------------------------------------------
+// VIDEOS CLOUDINARY : envoi direct depuis le navigateur
+// ---------------------------------------------------------------------------
+
+const VIDEO_FORMATS = "mp4,webm,mov";
+
+export function usesCloudinary(): boolean {
+  return process.env.STORAGE_PROVIDER === "cloudinary";
+}
+
+function videoFolder(folder: string) {
+  return `${CLOUDINARY_ROOT}/${folder}`;
+}
+
+/**
+ * Une video depasse la limite de 4,5 Mo des requetes Vercel : le navigateur
+ * l'envoie directement a Cloudinary, avec une signature limitee a ce dossier
+ * et a ces formats. Le secret ne quitte jamais le serveur.
+ */
+export function createVideoUploadParams(folder: string) {
+  ensureCloudinary();
+  const timestamp = Math.round(Date.now() / 1000);
+  const signed = {
+    folder: videoFolder(folder),
+    allowed_formats: VIDEO_FORMATS,
+    timestamp,
+  };
+  return {
+    ...signed,
+    signature: cloudinary.utils.api_sign_request(
+      signed,
+      process.env.CLOUDINARY_API_SECRET as string
+    ),
+    apiKey: process.env.CLOUDINARY_API_KEY as string,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME as string,
+  };
+}
+
+/**
+ * Relit la video chez Cloudinary apres l'envoi : les informations enregistrees
+ * ne viennent jamais du navigateur. Rejette ce qui sort du dossier attendu.
+ */
+export async function finalizeCloudinaryVideo(
+  publicId: string,
+  folder: string,
+  maxSize: number
+): Promise<StoredFile> {
+  ensureCloudinary();
+  if (!publicId.startsWith(`${videoFolder(folder)}/`)) {
+    throw new Error("Video hors du dossier attendu");
+  }
+
+  const resource = await cloudinary.api.resource(publicId, {
+    resource_type: "video",
+  });
+  if (resource.bytes > maxSize) {
+    await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
+    throw new Error("Video trop lourde");
+  }
+
+  const shared = {
+    resource_type: "video" as const,
+    secure: true,
+    version: resource.version,
+  };
+  return {
+    storageKey: `${CLOUDINARY_VIDEO_PREFIX}${publicId}`,
+    // MP4 plafonne a 1280 px : lisible partout (y compris un .mov d'iPhone)
+    // et supportable sur donnees mobiles.
+    url: cloudinary.url(publicId, {
+      ...shared,
+      format: "mp4",
+      transformation: [{ width: 1280, crop: "limit", quality: "auto" }],
+    }),
+    // Premiere image : affiche de la video et apercu sur WhatsApp.
+    thumbnailUrl: cloudinary.url(publicId, {
+      ...shared,
+      format: "jpg",
+      transformation: [
+        { start_offset: 0, width: 1280, crop: "limit", quality: "auto" },
+      ],
+    }),
+    size: resource.bytes,
+    mimeType: "video/mp4",
+    width: resource.width,
+    height: resource.height,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Selection
 // ---------------------------------------------------------------------------
 
@@ -195,8 +291,17 @@ function uploader(): StorageProvider {
 
 export const storage: StorageProvider = {
   upload: (file, folder) => uploader().upload(file, folder),
-  delete: (storageKey) =>
-    storageKey.startsWith(CLOUDINARY_PREFIX)
+  delete: async (storageKey) => {
+    if (storageKey.startsWith(CLOUDINARY_VIDEO_PREFIX)) {
+      ensureCloudinary();
+      await cloudinary.uploader.destroy(
+        storageKey.slice(CLOUDINARY_VIDEO_PREFIX.length),
+        { resource_type: "video", invalidate: true }
+      );
+      return;
+    }
+    return storageKey.startsWith(CLOUDINARY_PREFIX)
       ? cloud.delete(storageKey)
-      : local.delete(storageKey),
+      : local.delete(storageKey);
+  },
 };

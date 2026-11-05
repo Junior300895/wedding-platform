@@ -55,6 +55,28 @@ body {
   will-change: transform, opacity;
 }
 
+/* Pile de la galerie : la photo du dessus part sur la gauche en tournant et
+   decouvre la suivante ; "Precedent" joue le meme geste a l'envers. */
+@keyframes gallery-leave {
+  0% {
+    opacity: 1;
+    transform: rotate(-1.5deg);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-105%, 3%) rotate(-8deg);
+  }
+}
+.gallery-leave {
+  animation: gallery-leave 0.8s ease-in-out forwards;
+}
+.gallery-enter {
+  animation: gallery-leave 0.8s ease-in-out reverse both;
+}
+
 /* Ecran d'enveloppe de l'invitation publique.
    Palette propre a cet ecran, commune a tous les templates. Les durees
    sont alignees sur components/templates/envelope-gate.tsx. */

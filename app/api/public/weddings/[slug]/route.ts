@@ -13,7 +13,7 @@ export async function GET(
       events: { orderBy: { sortOrder: "asc" } },
       photos: {
         orderBy: { sortOrder: "asc" },
-        select: { id: true, url: true, thumbnailUrl: true, isCover: true },
+        select: { id: true, url: true, thumbnailUrl: true, mimeType: true, isCover: true },
       },
     },
   });

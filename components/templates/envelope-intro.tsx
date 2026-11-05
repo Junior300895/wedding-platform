@@ -3,8 +3,8 @@ import type { PublicWedding } from "./types";
 import { EnvelopeFlowers } from "./envelope-flowers";
 import { EnvelopeGate } from "./envelope-gate";
 
-const script = Great_Vibes({ subsets: ["latin"], weight: "400", display: "swap" });
-const sans = Montserrat({ subsets: ["latin"], display: "swap" });
+export const script = Great_Vibes({ subsets: ["latin"], weight: "400", display: "swap" });
+export const sans = Montserrat({ subsets: ["latin"], display: "swap" });
 
 // Les dates sont affichees a l'heure du lieu, quel que soit le serveur.
 const TIME_ZONE = "Africa/Dakar";

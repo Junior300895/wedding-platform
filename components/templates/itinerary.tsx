@@ -14,7 +14,7 @@ const TYPE_LABELS: Record<string, string> = {
  * "Partage et echanges de vues" n'emmene nulle part. Il faut un lien
  * explicite ou une adresse.
  */
-function mapHref(ev: PublicEvent): string | null {
+export function mapHref(ev: PublicEvent): string | null {
   const mapUrl = ev.mapUrl?.trim();
   if (mapUrl) return mapUrl;
 

@@ -7,8 +7,16 @@ import {
   setCoverPhotoAction,
 } from "@/actions/photo.actions";
 import { Button } from "@/components/ui/button";
+import { isVideo } from "@/lib/media";
+import { CoverVideoUpload } from "./cover-video-upload";
 
-type Photo = { id: string; url: string; isCover: boolean };
+type Photo = {
+  id: string;
+  url: string;
+  thumbnailUrl?: string | null;
+  mimeType?: string | null;
+  isCover: boolean;
+};
 
 export function PhotoManager({
   weddingId,
@@ -44,6 +52,8 @@ export function PhotoManager({
         </Button>
       </form>
 
+      <CoverVideoUpload weddingId={weddingId} />
+
       {state?.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>
       )}
@@ -54,8 +64,24 @@ export function PhotoManager({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {photos.map((p) => (
             <div key={p.id} className="group relative overflow-hidden rounded-xl border border-neutral-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.url} alt="" className="aspect-square w-full object-cover" />
+              {isVideo(p.mimeType) ? (
+                <video
+                  src={p.url}
+                  poster={p.thumbnailUrl ?? undefined}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="aspect-square w-full object-cover"
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.url} alt="" className="aspect-square w-full object-cover" />
+              )}
+              {isVideo(p.mimeType) && (
+                <span className="absolute right-2 top-2 rounded-full bg-neutral-900/80 px-2 py-0.5 text-xs text-white">
+                  Video
+                </span>
+              )}
               {p.isCover && (
                 <span className="absolute left-2 top-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white">
                   Couverture

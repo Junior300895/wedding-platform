@@ -5,6 +5,27 @@ import type { PublicPhoto } from "./types";
 
 /** Distance horizontale minimale (px) pour qu'un glissement change de photo. */
 const SWIPE_THRESHOLD = 50;
+/** Temps de pose de chaque photo quand la galerie defile seule. */
+const AUTOPLAY_MS = 4000;
+
+/** Pose des photos dans la pile : celle du dessus, puis les deux suivantes. */
+const STACK_POSES = [
+  "z-30 [transform:rotate(-1.5deg)]",
+  "z-20 [transform:translate(3%,3%)_rotate(2deg)_scale(0.97)]",
+  "z-10 [transform:translate(-3%,4%)_rotate(-3.5deg)_scale(0.95)]",
+];
+
+function Chevron({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-5 w-5 fill-none stroke-current stroke-2"
+    >
+      <path d={direction === "left" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"} />
+    </svg>
+  );
+}
 
 export function Gallery({
   photos,
@@ -15,6 +36,16 @@ export function Gallery({
 }) {
   // Index de la photo ouverte dans la visionneuse, null si fermee.
   const [index, setIndex] = useState<number | null>(null);
+  // Photo sur le dessus de la pile.
+  const [active, setActive] = useState(0);
+  // Photo en train de quitter la pile, et photo en train d'y revenir.
+  const [leaving, setLeaving] = useState<PublicPhoto | null>(null);
+  const [enteringId, setEnteringId] = useState<string | null>(null);
+  // Le defilement automatique attend que la galerie soit a l'ecran et s'arrete
+  // tant que la souris ou le clavier est sur elle.
+  const [inView, setInView] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const stackRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   // Un glissement se termine par un clic synthetique sur mobile : sans ce
   // drapeau, ce clic tomberait sur le fond et fermerait la visionneuse.
@@ -50,25 +81,72 @@ export function Gallery({
     };
   }, [open, close, prev, next]);
 
+  // En quittant la visionneuse, la pile est restee sur la derniere photo vue.
+  useEffect(() => {
+    if (index !== null) setActive(index);
+  }, [index]);
+
   // Precharge les photos voisines : le passage a la suivante est immediat.
   useEffect(() => {
-    if (index === null || count < 2) return;
-    for (const i of [(index + 1) % count, (index - 1 + count) % count]) {
+    if (count < 2) return;
+    const center = index ?? active;
+    for (const i of [(center + 1) % count, (center - 1 + count) % count]) {
       const img = new Image();
       img.src = photos[i].url;
     }
-  }, [index, count, photos]);
+  }, [index, active, count, photos]);
+
+  const stackNext = useCallback(() => {
+    if (count < 2) return;
+    setEnteringId(null);
+    setLeaving(photos[active]);
+    setActive((active + 1) % count);
+  }, [active, count, photos]);
+
+  const stackPrev = useCallback(() => {
+    if (count < 2) return;
+    const target = (active - 1 + count) % count;
+    setLeaving(null);
+    setEnteringId(photos[target].id);
+    setActive(target);
+  }, [active, count, photos]);
+
+  useEffect(() => {
+    const element = stackRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.4 }
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  // Le minuteur repart a chaque changement : une photo choisie a la main
+  // garde tout son temps de pose.
+  useEffect(() => {
+    if (count < 2 || !inView || paused || open) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setTimeout(stackNext, AUTOPLAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [active, count, inView, paused, open, stackNext]);
 
   if (count === 0) return null;
 
   const current = index !== null ? photos[index] : null;
+  // Les photos visibles, du dessus vers le dessous.
+  const stack = Array.from({ length: Math.min(count, STACK_POSES.length) }, (_, depth) => ({
+    photo: photos[(active + depth) % count],
+    position: (active + depth) % count,
+    depth,
+  }));
 
   function onTouchStart(e: React.TouchEvent) {
     const t = e.touches[0];
     touchStart.current = { x: t.clientX, y: t.clientY };
   }
 
-  function onTouchEnd(e: React.TouchEvent) {
+  function handleSwipe(e: React.TouchEvent, onNext: () => void, onPrev: () => void) {
     const start = touchStart.current;
     touchStart.current = null;
     if (!start || count < 2) return;
@@ -78,35 +156,114 @@ export function Gallery({
     // Geste surtout horizontal et assez long : on change de photo.
     if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
       justSwiped.current = true;
-      if (dx < 0) next();
-      else prev();
+      if (dx < 0) onNext();
+      else onPrev();
     }
   }
+
+  const stackButton =
+    "absolute top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#0f2d4e]/20 bg-white/70 text-[#0f2d4e] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f2d4e] sm:h-14 sm:w-14";
 
   const navButton =
     "absolute top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-2xl text-white transition-colors hover:bg-black/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white";
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:gap-3">
-        {photos.map((p, i) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => setIndex(i)}
-            aria-label={`Agrandir la photo ${i + 1} sur ${count}`}
-            className="group relative aspect-square overflow-hidden rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={p.thumbnailUrl ?? p.url}
-              alt={`${coupleName} — photo ${i + 1}`}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </button>
-        ))}
+      {/* La pile de tirages : le geste, les fleches et le clic agissent tous
+          sur la photo du dessus. */}
+      <div
+        className="relative mx-auto w-fit px-2 sm:px-20"
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") setPaused(true);
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setPaused(false);
+        }}
+        // Focus clavier seulement : un bouton touche ou clique garde le focus,
+        // ce qui arreterait le defilement pour de bon.
+        onFocus={(e) => {
+          if (e.target.matches(":focus-visible")) setPaused(true);
+        }}
+        onBlur={() => setPaused(false)}
+      >
+        <div
+          ref={stackRef}
+          onTouchStart={onTouchStart}
+          onTouchEnd={(e) => handleSwipe(e, stackNext, stackPrev)}
+          className="relative aspect-[3/4] w-[min(70vw,56vh,480px)] touch-pan-y"
+        >
+          {stack.map(({ photo, position, depth }) => (
+            <button
+              key={photo.id}
+              type="button"
+              onAnimationEnd={() => setEnteringId(null)}
+              tabIndex={depth === 0 ? 0 : -1}
+              aria-hidden={depth === 0 ? undefined : true}
+              aria-label={`Agrandir la photo ${position + 1} sur ${count}`}
+              onClick={() => {
+                if (justSwiped.current) {
+                  justSwiped.current = false;
+                  return;
+                }
+                if (depth === 0) setIndex(position);
+              }}
+              className={`absolute inset-0 rounded-lg bg-[#fbf8f1] p-2 shadow-[0_14px_35px_rgba(50,35,10,0.22)] transition-transform duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f2d4e] sm:p-3 ${STACK_POSES[depth]} ${
+                depth === 0 ? "cursor-zoom-in" : "pointer-events-none"
+              } ${depth === 0 && enteringId === photo.id ? "gallery-enter" : ""}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.url}
+                alt={depth === 0 ? `${coupleName} — photo ${position + 1}` : ""}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                className="h-full w-full select-none rounded object-cover"
+              />
+            </button>
+          ))}
+
+          {leaving && (
+            <div
+              key={`leaving-${leaving.id}`}
+              aria-hidden="true"
+              onAnimationEnd={() => setLeaving(null)}
+              className="gallery-leave pointer-events-none absolute inset-0 z-[35] rounded-lg bg-[#fbf8f1] p-2 shadow-[0_14px_35px_rgba(50,35,10,0.22)] sm:p-3"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={leaving.url}
+                alt=""
+                draggable={false}
+                className="h-full w-full select-none rounded object-cover"
+              />
+            </div>
+          )}
+        </div>
+
+        {count > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={stackPrev}
+              aria-label="Photo precedente"
+              className={`${stackButton} -left-1 sm:left-0`}
+            >
+              <Chevron direction="left" />
+            </button>
+            <button
+              type="button"
+              onClick={stackNext}
+              aria-label="Photo suivante"
+              className={`${stackButton} -right-1 sm:right-0`}
+            >
+              <Chevron direction="right" />
+            </button>
+            <p aria-live="polite" className="sr-only">
+              Photo {active + 1} sur {count}
+            </p>
+          </>
+        )}
       </div>
 
       {current && index !== null && (
@@ -122,7 +279,7 @@ export function Gallery({
             close();
           }}
           onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
+          onTouchEnd={(e) => handleSwipe(e, next, prev)}
           className="fixed inset-0 z-50 flex touch-pan-y items-center justify-center bg-black/90 p-4"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}

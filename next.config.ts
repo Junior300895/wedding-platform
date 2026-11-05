@@ -8,7 +8,10 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb",
+      // En stockage local, les videos (50 Mo max) passent par une Server Action.
+      // Avec Cloudinary elles partent directement du navigateur.
+      bodySizeLimit:
+        process.env.STORAGE_PROVIDER === "cloudinary" ? "10mb" : "55mb",
     },
   },
   // Les invitations ont d'abord ete publiees sous /mariage/<slug>. Les liens

@@ -3,6 +3,8 @@ export type PublicPhoto = {
   url: string;
   /** Vignette carree optimisee (Cloudinary) ; absente pour les photos locales. */
   thumbnailUrl?: string | null;
+  /** "video/..." pour une video de couverture, jamais montree en galerie. */
+  mimeType?: string | null;
   isCover: boolean;
 };
 
@@ -12,6 +14,8 @@ export type PublicEvent = {
   title: string;
   venueName: string;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   mapUrl: string | null;
   startsAt: Date | null;
 };

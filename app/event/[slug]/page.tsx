@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { absoluteUrl } from "@/lib/utils";
+import { isVideo } from "@/lib/media";
 import { getTheme } from "@/components/templates/registry";
 import { WeddingTemplate } from "@/components/templates/wedding-template";
 import type { PublicWedding } from "@/components/templates/types";
@@ -42,9 +43,12 @@ export async function generateMetadata({
     `${wedding.partnerOne} & ${wedding.partnerTwo} vous invitent a celebrer leur mariage.`;
   const flat = rawDescription.replace(/\s+/g, " ").trim();
   const description = flat.length > 200 ? `${flat.slice(0, 197).trimEnd()}...` : flat;
+  // WhatsApp et les reseaux attendent une image : pour une video de
+  // couverture, on prend son affiche, sinon la premiere photo.
+  const coverMedia = wedding.photos.find((p) => p.isCover);
   const cover =
-    wedding.photos.find((p) => p.isCover)?.url ??
-    wedding.photos[0]?.url ??
+    (isVideo(coverMedia?.mimeType) ? coverMedia?.thumbnailUrl : coverMedia?.url) ??
+    wedding.photos.find((p) => !isVideo(p.mimeType))?.url ??
     wedding.coverImageUrl ??
     undefined;
   const url = absoluteUrl(weddingPath(slug));
@@ -105,6 +109,8 @@ export default async function PublicWeddingPage({
       title: e.title,
       venueName: e.venueName,
       address: e.address,
+      latitude: e.latitude,
+      longitude: e.longitude,
       mapUrl: e.mapUrl,
       startsAt: e.startsAt,
     })),
@@ -112,6 +118,7 @@ export default async function PublicWeddingPage({
       id: p.id,
       url: p.url,
       thumbnailUrl: p.thumbnailUrl,
+      mimeType: p.mimeType,
       isCover: p.isCover,
     })),
   };
