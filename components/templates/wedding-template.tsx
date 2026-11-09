@@ -69,6 +69,18 @@ export function WeddingTemplate({
     ? null
     : (coverMedia?.url ?? images[0]?.url ?? wedding.coverImageUrl ?? null);
   const galleryPhotos = images.filter((p) => p.url !== cover);
+  // WhatsApp attend le numero international sans "+" : un numero senegalais
+  // saisi sur 9 chiffres (77 123 45 67) recoit l'indicatif 221. Un autre
+  // format sans indicatif ne permet pas de deviner le pays : pas de bouton.
+  const phoneDigits = wedding.contactPhone?.replace(/\D/g, "") ?? "";
+  const whatsappNumber = /^(\+|00)/.test(wedding.contactPhone?.trim() ?? "")
+    ? phoneDigits.replace(/^00/, "")
+    : /^[37]\d{8}$/.test(phoneDigits)
+      ? `221${phoneDigits}`
+      : phoneDigits.startsWith("221") && phoneDigits.length === 12
+        ? phoneDigits
+        : null;
+
   // Photo du mot de remerciement : la derniere de la galerie, a defaut la
   // couverture. Une video de couverture n'y figure jamais.
   const thankPhoto = galleryPhotos.at(-1) ?? images[0] ?? null;
@@ -370,12 +382,33 @@ export function WeddingTemplate({
           {wedding.partnerOne} &amp; {wedding.partnerTwo}
         </p>
         {wedding.contactPhone && (
-          <a
-            href={`tel:${wedding.contactPhone.replace(/\s/g, "")}`}
-            className={`mt-3 inline-flex min-h-[44px] items-center px-4 text-sm ${theme.accent} transition-opacity hover:opacity-70`}
-          >
-            {wedding.contactPhone}
-          </a>
+          <div className={`${sans.className} mx-auto mt-8 max-w-sm`}>
+            <p className="text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)]">
+              Personne à contacter
+            </p>
+            <p className="mt-2 text-sm leading-relaxed opacity-80">
+              Pour tout renseignement sur le lieu ou le mariage, contactez le{" "}
+              <span className="font-semibold tabular-nums">{wedding.contactPhone}</span>
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <a
+                href={`tel:${wedding.contactPhone.replace(/[^\d+]/g, "")}`}
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--fp-ink)] px-5 text-sm font-medium text-white transition-colors hover:bg-[var(--fp-ink-2)]"
+              >
+                <span aria-hidden="true">✆</span> Appeler
+              </a>
+              {whatsappNumber && (
+                <a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--fp-ink)] px-5 text-sm font-medium text-[var(--fp-ink)] transition-colors hover:bg-[var(--fp-ink)] hover:text-white"
+                >
+                  WhatsApp
+                </a>
+              )}
+            </div>
+          </div>
         )}
         <p className={`mt-8 text-xs ${theme.accentSoft}`}>
           Cree avec Ndoye Digital
