@@ -1,4 +1,5 @@
-import type { PublicWedding, Theme } from "./types";
+import type { PublicContact, PublicWedding, Theme } from "./types";
+import { telHref, whatsappNumber } from "@/lib/phone";
 import { getTheme, getAccentButton } from "./registry";
 import { Confetti } from "./confetti";
 import { Countdown } from "./countdown";
@@ -69,17 +70,14 @@ export function WeddingTemplate({
     ? null
     : (coverMedia?.url ?? images[0]?.url ?? wedding.coverImageUrl ?? null);
   const galleryPhotos = images.filter((p) => p.url !== cover);
-  // WhatsApp attend le numero international sans "+" : un numero senegalais
-  // saisi sur 9 chiffres (77 123 45 67) recoit l'indicatif 221. Un autre
-  // format sans indicatif ne permet pas de deviner le pays : pas de bouton.
-  const phoneDigits = wedding.contactPhone?.replace(/\D/g, "") ?? "";
-  const whatsappNumber = /^(\+|00)/.test(wedding.contactPhone?.trim() ?? "")
-    ? phoneDigits.replace(/^00/, "")
-    : /^[37]\d{8}$/.test(phoneDigits)
-      ? `221${phoneDigits}`
-      : phoneDigits.startsWith("221") && phoneDigits.length === 12
-        ? phoneDigits
-        : null;
+  // Personnes a contacter ; sans contact saisi, le telephone des
+  // informations generales reste affiche, comme avant.
+  const contacts: PublicContact[] =
+    wedding.contacts.length > 0
+      ? wedding.contacts
+      : wedding.contactPhone
+        ? [{ id: "main", name: "", phone: wedding.contactPhone, role: null }]
+        : [];
 
   // Photo du mot de remerciement : la derniere de la galerie, a defaut la
   // couverture. Une video de couverture n'y figure jamais.
@@ -381,33 +379,53 @@ export function WeddingTemplate({
         <p className="mt-4 font-serif text-2xl">
           {wedding.partnerOne} &amp; {wedding.partnerTwo}
         </p>
-        {wedding.contactPhone && (
-          <div className={`${sans.className} mx-auto mt-8 max-w-sm`}>
+        {contacts.length > 0 && (
+          <div className={`${sans.className} mx-auto mt-8 max-w-2xl`}>
             <p className="text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)]">
-              Personne à contacter
+              {contacts.length > 1 ? "Personnes à contacter" : "Personne à contacter"}
             </p>
-            <p className="mt-2 text-sm leading-relaxed opacity-80">
-              Pour tout renseignement sur le lieu ou le mariage, contactez le{" "}
-              <span className="font-semibold tabular-nums">{wedding.contactPhone}</span>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed opacity-80">
+              Pour tout renseignement sur le lieu ou le mariage
             </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-3">
-              <a
-                href={`tel:${wedding.contactPhone.replace(/[^\d+]/g, "")}`}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--fp-ink)] px-5 text-sm font-medium text-white transition-colors hover:bg-[var(--fp-ink-2)]"
-              >
-                <span aria-hidden="true">✆</span> Appeler
-              </a>
-              {whatsappNumber && (
-                <a
-                  href={`https://wa.me/${whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--fp-ink)] px-5 text-sm font-medium text-[var(--fp-ink)] transition-colors hover:bg-[var(--fp-ink)] hover:text-white"
-                >
-                  WhatsApp
-                </a>
-              )}
-            </div>
+            <ul className="mt-6 flex flex-wrap justify-center gap-4">
+              {contacts.map((c) => {
+                const wa = whatsappNumber(c.phone);
+                return (
+                  <li
+                    key={c.id}
+                    className={`w-full max-w-[17rem] rounded-2xl border px-5 py-5 ${theme.surface} ${theme.line}`}
+                  >
+                    {c.name && <p className="font-serif text-xl">{c.name}</p>}
+                    {c.role && (
+                      <p className="mt-0.5 text-xs uppercase tracking-[0.14em] text-[var(--fp-gold)]">
+                        {c.role}
+                      </p>
+                    )}
+                    <p className="mt-2 font-semibold tabular-nums">{c.phone}</p>
+                    <div className="mt-4 flex justify-center gap-2">
+                      <a
+                        href={telHref(c.phone)}
+                        aria-label={`Appeler ${c.name || c.phone}`}
+                        className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[var(--fp-ink)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--fp-ink-2)]"
+                      >
+                        <span aria-hidden="true">✆</span> Appeler
+                      </a>
+                      {wa && (
+                        <a
+                          href={`https://wa.me/${wa}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Ecrire sur WhatsApp a ${c.name || c.phone}`}
+                          className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--fp-ink)] px-4 text-sm font-medium text-[var(--fp-ink)] transition-colors hover:bg-[var(--fp-ink)] hover:text-white"
+                        >
+                          WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         )}
         <p className={`mt-8 text-xs ${theme.accentSoft}`}>

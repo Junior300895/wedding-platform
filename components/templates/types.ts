@@ -20,6 +20,13 @@ export type PublicEvent = {
   startsAt: Date | null;
 };
 
+export type PublicContact = {
+  id: string;
+  name: string;
+  phone: string;
+  role: string | null;
+};
+
 export type PublicWedding = {
   id: string;
   slug: string;
@@ -32,6 +39,7 @@ export type PublicWedding = {
   rsvpEnabled: boolean;
   coverImageUrl: string | null;
   events: PublicEvent[];
+  contacts: PublicContact[];
   photos: PublicPhoto[];
   templateKey: string;
 };

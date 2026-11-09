@@ -118,6 +118,7 @@ model Wedding {
   template   WeddingTemplate? @relation(fields: [templateId], references: [id])
 
   events      WeddingEvent[]
+  contacts    WeddingContact[]
   photos      WeddingPhoto[]
   guests      Guest[]
   orders      Order[]
@@ -152,6 +153,25 @@ model WeddingEvent {
   startsAt  DateTime?
   notes     String?   @db.Text
   sortOrder Int       @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([weddingId])
+}
+
+// =====================================================
+// CONTACT (personnes a joindre pour les renseignements)
+// =====================================================
+
+model WeddingContact {
+  id        String  @id @default(cuid())
+  weddingId String
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  name      String
+  phone     String
+  role      String? // ex "Temoin", "Organisatrice"
+  sortOrder Int     @default(0)
 
   createdAt DateTime @default(now())
 

@@ -18,6 +18,7 @@ async function getWedding(slug: string) {
     include: {
       template: true,
       events: { orderBy: { sortOrder: "asc" } },
+      contacts: { orderBy: { sortOrder: "asc" } },
       photos: { orderBy: { sortOrder: "asc" } },
     },
   });
@@ -114,6 +115,12 @@ export default async function PublicWeddingPage({
       longitude: e.longitude,
       mapUrl: e.mapUrl,
       startsAt: e.startsAt,
+    })),
+    contacts: wedding.contacts.map((c) => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      role: c.role,
     })),
     photos: wedding.photos.map((p) => ({
       id: p.id,

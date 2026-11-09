@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/ui/badge";
 import { WeddingEditForm } from "@/components/dashboard/wedding-edit-form";
 import { TemplatePicker } from "@/components/dashboard/template-picker";
 import { EventManager } from "@/components/dashboard/event-manager";
+import { ContactManager } from "@/components/dashboard/contact-manager";
 import { PhotoManager } from "@/components/dashboard/photo-manager";
 import { GuestList } from "@/components/dashboard/guest-list";
 import { PublishPanel } from "@/components/dashboard/publish-panel";
@@ -43,6 +44,7 @@ export default async function WeddingManagePage({
     include: {
       user: { select: { name: true, email: true } },
       events: { orderBy: { sortOrder: "asc" } },
+      contacts: { orderBy: { sortOrder: "asc" } },
       photos: { orderBy: { sortOrder: "asc" } },
       guests: { orderBy: { createdAt: "desc" } },
     },
@@ -102,6 +104,10 @@ export default async function WeddingManagePage({
 
       <Section title="Programme">
         <EventManager weddingId={wedding.id} events={wedding.events} />
+      </Section>
+
+      <Section title="Personnes a contacter">
+        <ContactManager weddingId={wedding.id} contacts={wedding.contacts} />
       </Section>
 
       <Section title="Design">

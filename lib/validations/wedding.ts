@@ -31,5 +31,16 @@ export const weddingEventSchema = z.object({
   notes: z.string().max(500, "Texte trop long").optional().or(z.literal("")),
 });
 
+export const weddingContactSchema = z.object({
+  name: z.string().trim().min(2, "Nom trop court").max(80, "Nom trop long"),
+  phone: z
+    .string()
+    .trim()
+    .min(6, "Numero trop court")
+    .max(30, "Numero trop long")
+    .regex(/^[\d\s+().-]+$/, "Numero invalide"),
+  role: z.string().trim().max(60, "Role trop long").optional().or(z.literal("")),
+});
+
 export type WeddingInput = z.infer<typeof weddingSchema>;
 export type WeddingEventInput = z.infer<typeof weddingEventSchema>;
