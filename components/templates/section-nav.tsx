@@ -47,7 +47,7 @@ export function SectionNav({
   return (
     <nav
       aria-label="Rubriques de l'invitation"
-      className={`fixed bottom-3 left-1/2 z-40 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-x-auto rounded-full border border-white/20 bg-[#0f2d4e]/95 px-2 shadow-lg sm:px-6 no-scrollbar ${className}`}
+      className={`fixed bottom-3 left-1/2 z-40 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-x-auto rounded-full border border-white/20 bg-[color-mix(in_srgb,var(--fp-ink)_95%,transparent)] px-2 shadow-lg sm:px-6 no-scrollbar ${className}`}
     >
       <ul className="flex items-center">
         {items.map(({ id, label }) => (
@@ -57,7 +57,7 @@ export function SectionNav({
               aria-current={active === id ? "true" : undefined}
               onClick={() => setActive(id)}
               className={`flex min-h-[44px] items-center whitespace-nowrap px-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.06em] transition-colors sm:px-3 sm:text-sm ${
-                active === id ? "text-[#d8b978]" : "text-white hover:text-[#d8b978]"
+                active === id ? "text-[var(--fp-gold-soft)]" : "text-white hover:text-[var(--fp-gold-soft)]"
               }`}
             >
               {label}

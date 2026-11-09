@@ -10,6 +10,7 @@ const templates = [
   { key: "floral", name: "Floral", description: "Romantique", style: "Motifs floraux, tons roses et pastels", minTier: PlanTier.PREMIUM, sortOrder: 4 },
   { key: "tradition", name: "Tradition", description: "Inspire des codes locaux", style: "Motifs traditionnels, couleurs chaudes", minTier: PlanTier.PREMIUM, sortOrder: 5 },
   { key: "oriental", name: "Oriental", description: "Elegant et decoratif", style: "Arabesques, tons emeraude et or", minTier: PlanTier.PRESTIGE, sortOrder: 6 },
+  { key: "sable", name: "Sable", description: "Beige et marron, chaleureux", style: "Fond sable, details brun chocolat et caramel", minTier: PlanTier.ESSENTIEL, sortOrder: 7 },
 ];
 
 async function main() {

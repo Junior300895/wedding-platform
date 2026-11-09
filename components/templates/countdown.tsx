@@ -17,11 +17,11 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 function Tile({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex aspect-square flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[#174f8a] to-[#0b2c4d] text-white shadow-[0_10px_20px_rgba(20,35,50,0.25)] sm:rounded-2xl">
+    <div className="flex aspect-square flex-col items-center justify-center rounded-xl bg-gradient-to-b from-[var(--fp-ink-2)] to-[var(--fp-ink-3)] text-white shadow-[0_10px_20px_rgba(20,35,50,0.25)] sm:rounded-2xl">
       <span className="text-2xl font-medium tabular-nums leading-none sm:text-3xl">
         {pad(value)}
       </span>
-      <span className="mt-1 text-[0.55rem] uppercase tracking-[0.1em] text-[#a9c8e8] sm:mt-1.5 sm:text-[0.7rem]">
+      <span className="mt-1 text-[0.55rem] uppercase tracking-[0.1em] text-[var(--fp-tile-label)] sm:mt-1.5 sm:text-[0.7rem]">
         {label}
       </span>
     </div>

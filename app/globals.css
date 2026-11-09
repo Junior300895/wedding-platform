@@ -5,6 +5,26 @@
 :root {
   --background: #ffffff;
   --foreground: #1a1a1a;
+
+  /* Couleurs des elements decoratifs de l'invitation (enveloppe, menu,
+     tuiles, lieux, galerie). Bleu nuit et terracotta par defaut ; un theme
+     peut les remplacer via sa palette (components/templates/registry.ts). */
+  --fp-ink: #0f2d4e;
+  --fp-ink-2: #174f8a;
+  --fp-ink-3: #0b2c4d;
+  --fp-night: #0b1d2c;
+  --fp-warm: #c56a3e;
+  --fp-warm-soft: #e08a5c;
+  --fp-seal-light: #e0946b;
+  --fp-seal-dark: #a9542c;
+  --fp-gold: #a98f5c;
+  --fp-gold-soft: #d8b978;
+  --fp-tile-label: #a9c8e8;
+  --fp-dot: #d8c7a0;
+  --fp-env-pocket: #10243e;
+  --fp-env-bottom: #0a1a26;
+  --fp-env-flap-a: #26476b;
+  --fp-env-flap-b: #1f3d5e;
 }
 
 html {
@@ -125,10 +145,10 @@ body {
   white-space: nowrap;
 }
 .envelope-pill-warm {
-  background: #c56a3e;
+  background: var(--fp-warm);
 }
 .envelope-pill-blue {
-  background: #174f8a;
+  background: var(--fp-ink-2);
 }
 .envelope-eyebrow {
   color: #8f7442;
@@ -143,12 +163,12 @@ body {
 }
 .envelope-names {
   margin-top: 0.4rem;
-  color: #0f2d4e;
+  color: var(--fp-ink);
   font-size: clamp(2.6rem, 8vw, 4.5rem);
   line-height: 1.15;
 }
 .envelope-names span {
-  color: #c56a3e;
+  color: var(--fp-warm);
 }
 .envelope-date {
   margin-top: 0.5rem;
@@ -158,7 +178,7 @@ body {
   text-transform: uppercase;
 }
 .envelope-date strong {
-  color: #c56a3e;
+  color: var(--fp-warm);
   font-size: 1.4em;
   font-weight: 700;
 }
@@ -170,7 +190,7 @@ body {
   background: none;
 }
 .envelope-button:focus-visible {
-  outline: 2px solid #174f8a;
+  outline: 2px solid var(--fp-ink-2);
   outline-offset: 2.25rem;
 }
 .envelope-scene {
@@ -189,7 +209,7 @@ body {
   position: absolute;
   inset: 0;
   display: block;
-  background: #0b1d2c;
+  background: var(--fp-night);
   box-shadow: 0 24px 50px rgba(70, 50, 20, 0.28);
   perspective: 1000px;
 }
@@ -205,21 +225,21 @@ body {
   z-index: 2;
 }
 .envelope-pocket-left {
-  background: #10243e;
+  background: var(--fp-env-pocket);
   clip-path: polygon(0 0, 50% 50%, 0 100%);
 }
 .envelope-pocket-right {
-  background: #10243e;
+  background: var(--fp-env-pocket);
   clip-path: polygon(100% 0, 50% 50%, 100% 100%);
 }
 .envelope-pocket-bottom {
-  background: linear-gradient(#0a1a26, #0b1d2c);
+  background: linear-gradient(var(--fp-env-bottom), var(--fp-night));
   clip-path: polygon(0 100%, 50% 50%, 100% 100%);
 }
 .envelope-flap {
   inset: 0 0 50%;
   z-index: 3;
-  background: linear-gradient(#26476b, #1f3d5e);
+  background: linear-gradient(var(--fp-env-flap-a), var(--fp-env-flap-b));
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top;
   transition: transform 0.7s ease-in-out, z-index 0s 0.35s;
@@ -241,7 +261,7 @@ body {
   border-radius: 9999px;
   color: #fdf3e4;
   font-size: calc(var(--envelope-w) * 0.075);
-  background: radial-gradient(circle at 35% 25%, #e0946b, #c56a3e 55%, #a9542c);
+  background: radial-gradient(circle at 35% 25%, var(--fp-seal-light), var(--fp-warm) 55%, var(--fp-seal-dark));
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
   transform: translate(-50%, -50%);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -273,7 +293,7 @@ body {
   transform: translateY(-45%);
 }
 .envelope-hint {
-  color: #174f8a;
+  color: var(--fp-ink-2);
   font-size: clamp(0.72rem, 1.9vw, 1rem);
   font-weight: 500;
   letter-spacing: 0.14em;

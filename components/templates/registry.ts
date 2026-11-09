@@ -136,6 +136,46 @@ export const themes: Record<string, Theme> = {
     divider: "❈",
     confetti: ["#0f6b4f", "#3a8a70", "#8fc4ae", "#2f7860", "#cde3d8"],
   },
+  sable: {
+    key: "sable",
+    name: "Sable",
+    bg: "bg-[#f6efe4]",
+    text: "text-[#3e2a1f]",
+    surface: "bg-[#fffaf3]",
+    line: "border-[#e4d3bd]",
+    accent: "text-[#7a4b2e]",
+    accentSoft: "text-[#8a6a4f]",
+    accentDot: "bg-[#7a4b2e]",
+    fieldBorder: "border-[#dcc7ab]",
+    field: "bg-[#f6efe4] text-[#3e2a1f] placeholder:text-[#b39a7e]",
+    fieldError: "text-red-700",
+    heroFont: "font-serif",
+    heroBgClass: "bg-gradient-to-b from-[#ecdcc5] to-[#f6efe4]",
+    heroScrim: "bg-gradient-to-b from-[#f6efe4]/10 via-[#f6efe4]/25 to-[#f6efe4]",
+    heroTextScrim:
+      "bg-[radial-gradient(ellipse_70%_55%_at_50%_45%,rgba(246,239,228,0.72)_0%,rgba(246,239,228,0.42)_45%,rgba(246,239,228,0)_78%)]",
+    divider: "❦",
+    confetti: ["#7a4b2e", "#a8774f", "#c9a77c", "#e0c9a6", "#5a3a26"],
+    // Les elements decoratifs passent du bleu nuit au brun chocolat.
+    palette: {
+      "--fp-ink": "#5a3a26",
+      "--fp-ink-2": "#8b5a3c",
+      "--fp-ink-3": "#4a2e1d",
+      "--fp-night": "#3b2418",
+      "--fp-warm": "#b9844f",
+      "--fp-warm-soft": "#e3b07f",
+      "--fp-seal-light": "#dcae7c",
+      "--fp-seal-dark": "#8f6235",
+      "--fp-gold": "#a07c55",
+      "--fp-gold-soft": "#e2c08f",
+      "--fp-tile-label": "#ecd9bf",
+      "--fp-dot": "#d6bf9f",
+      "--fp-env-pocket": "#4a2e1d",
+      "--fp-env-bottom": "#2f1c12",
+      "--fp-env-flap-a": "#7a5136",
+      "--fp-env-flap-b": "#6a452d",
+    },
+  },
 };
 
 /** Classe du bouton d'accent par theme (fond plein). */
@@ -146,6 +186,7 @@ export const accentButton: Record<string, string> = {
   floral: "bg-[#c02466] hover:bg-[#a01d55] text-white",
   tradition: "bg-[#a0522d] hover:bg-[#8b4513] text-white",
   oriental: "bg-[#0f6b4f] hover:bg-[#0d5a42] text-white",
+  sable: "bg-[#7a4b2e] hover:bg-[#5a3a26] text-white",
 };
 
 export function getTheme(key: string): Theme {

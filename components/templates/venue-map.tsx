@@ -81,7 +81,7 @@ export async function VenueMap({
     <article className="text-center">
       <h3 className="font-serif text-3xl sm:text-4xl">{title}</h3>
       <p
-        className={`${sans.className} mt-2 text-xs uppercase tracking-[0.1em] text-[#174f8a] sm:text-sm`}
+        className={`${sans.className} mt-2 text-xs uppercase tracking-[0.1em] text-[var(--fp-ink-2)] sm:text-sm`}
       >
         {details}
       </p>
@@ -100,7 +100,7 @@ export async function VenueMap({
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${sans.className} flex min-h-[48px] items-center justify-center bg-[#0f2d4e] px-5 text-center text-xs uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#174f8a] sm:text-sm`}
+          className={`${sans.className} flex min-h-[48px] items-center justify-center bg-[var(--fp-ink)] px-5 text-center text-xs uppercase tracking-[0.14em] text-white transition-colors hover:bg-[var(--fp-ink-2)] sm:text-sm`}
         >
           Ouvrir dans Google Maps
         </a>

@@ -185,7 +185,7 @@ export function Gallery({
   }
 
   const stackButton =
-    "absolute top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#0f2d4e]/20 bg-white/70 text-[#0f2d4e] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f2d4e] sm:h-14 sm:w-14";
+    "absolute top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--fp-ink)_20%,transparent)] bg-white/70 text-[var(--fp-ink)] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--fp-ink)] sm:h-14 sm:w-14";
 
   const navButton =
     "absolute top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-2xl text-white transition-colors hover:bg-black/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white";
@@ -224,7 +224,7 @@ export function Gallery({
                 }
                 if (depth === 0) setIndex(position);
               }}
-              className={`absolute inset-0 rounded-lg bg-[#fbf8f1] p-2 shadow-[0_14px_35px_rgba(50,35,10,0.22)] transition-transform duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f2d4e] sm:p-3 ${STACK_POSES[depth]} ${
+              className={`absolute inset-0 rounded-lg bg-[#fbf8f1] p-2 shadow-[0_14px_35px_rgba(50,35,10,0.22)] transition-transform duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fp-ink)] sm:p-3 ${STACK_POSES[depth]} ${
                 depth === 0 ? "cursor-zoom-in" : "pointer-events-none"
               } ${depth === 0 && enteringId === photo.id ? "gallery-enter" : ""}`}
             >

@@ -90,4 +90,9 @@ export type Theme = {
    * Tailwind ne conviendraient pas ici.
    */
   confetti: string[];
+  /**
+   * Remplace les couleurs decoratives par defaut (variables --fp-* de
+   * globals.css), par exemple { "--fp-ink": "#5a3a26" }. Absente : bleu nuit.
+   */
+  palette?: Record<`--fp-${string}`, string>;
 };

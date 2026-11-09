@@ -91,7 +91,10 @@ export function WeddingTemplate({
   ].filter((item): item is { id: string; label: string } => !!item);
 
   return (
-    <div className={`${theme.bg} ${theme.text} min-h-screen`}>
+    <div
+      className={`${theme.bg} ${theme.text} min-h-screen`}
+      style={theme.palette as React.CSSProperties | undefined}
+    >
       <EnvelopeIntro wedding={wedding} />
       <SectionNav items={navItems} className={sans.className} />
 
@@ -105,7 +108,7 @@ export function WeddingTemplate({
       <section
         className={`relative flex min-h-[100svh] flex-col items-center overflow-hidden px-5 text-center ${
           coverVideo
-            ? "justify-end bg-[#0b1d2c] pb-24 pt-24 text-white"
+            ? "justify-end bg-[var(--fp-night)] pb-24 pt-24 text-white"
             : `justify-center py-24 ${theme.heroBgClass}`
         }`}
       >
@@ -117,7 +120,7 @@ export function WeddingTemplate({
               className="absolute inset-0 h-full w-full object-cover"
             />
             {/* La video reste nette : seul le bas s'assombrit, sous le texte. */}
-            <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[#0b1d2c]/85 via-[#0b1d2c]/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[color-mix(in_srgb,var(--fp-night)_85%,transparent)] via-[color-mix(in_srgb,var(--fp-night)_40%,transparent)] to-transparent" />
           </>
         ) : (
           cover && (
@@ -154,7 +157,7 @@ export function WeddingTemplate({
 
           {coverVideo ? (
             <h1 className={`${script.className} mt-3 text-5xl leading-tight sm:text-7xl lg:text-8xl`}>
-              {wedding.partnerOne} <span className="text-[#e08a5c]">&amp;</span>{" "}
+              {wedding.partnerOne} <span className="text-[var(--fp-warm-soft)]">&amp;</span>{" "}
               {wedding.partnerTwo}
             </h1>
           ) : (
@@ -215,12 +218,12 @@ export function WeddingTemplate({
         <Section className="pt-0 sm:pt-0">
           <div id="lieux" className="mx-auto max-w-2xl scroll-mt-8">
             <header className="mb-8 text-center">
-              <h2 className={`${script.className} text-6xl text-[#0f2d4e] sm:text-7xl`}>
+              <h2 className={`${script.className} text-6xl text-[var(--fp-ink)] sm:text-7xl`}>
                 Les Lieux
               </h2>
               <div
                 aria-hidden="true"
-                className="mx-auto mt-3 h-2 w-2 rounded-full bg-[#d8c7a0]"
+                className="mx-auto mt-3 h-2 w-2 rounded-full bg-[var(--fp-dot)]"
               />
             </header>
             <div className="space-y-14">
@@ -244,12 +247,12 @@ export function WeddingTemplate({
         {/* Monogramme en filigrane, derriere les tuiles. */}
         <div
           aria-hidden="true"
-          className={`${script.className} pointer-events-none absolute inset-0 flex select-none items-center justify-center whitespace-nowrap text-[clamp(8rem,24vw,15rem)] leading-none text-[#0f2d4e]/10`}
+          className={`${script.className} pointer-events-none absolute inset-0 flex select-none items-center justify-center whitespace-nowrap text-[clamp(8rem,24vw,15rem)] leading-none text-[color-mix(in_srgb,var(--fp-ink)_10%,transparent)]`}
         >
           {initial(wedding.partnerOne)}&amp;{initial(wedding.partnerTwo)}
         </div>
         <div className="relative">
-          <p className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.28em] text-[#a98f5c] sm:mb-5 sm:text-xs">
+          <p className="mb-4 text-center text-[0.65rem] uppercase tracking-[0.28em] text-[var(--fp-gold)] sm:mb-5 sm:text-xs">
             Compte à rebours
           </p>
           <Countdown date={countdownTarget} accent={theme.accent} />
@@ -261,12 +264,12 @@ export function WeddingTemplate({
         <Section>
           <div id="galerie" className="mx-auto max-w-4xl scroll-mt-8">
             <p
-              className={`${sans.className} mb-3 text-center text-xs uppercase tracking-[0.28em] text-[#a98f5c] sm:text-sm`}
+              className={`${sans.className} mb-3 text-center text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)] sm:text-sm`}
             >
               Nos moments
             </p>
             <h2
-              className={`${script.className} mb-12 text-center text-5xl text-[#0f2d4e] sm:text-7xl`}
+              className={`${script.className} mb-12 text-center text-5xl text-[var(--fp-ink)] sm:text-7xl`}
             >
               L&apos;amour en images
             </h2>
