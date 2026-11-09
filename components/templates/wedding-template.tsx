@@ -69,6 +69,9 @@ export function WeddingTemplate({
     ? null
     : (coverMedia?.url ?? images[0]?.url ?? wedding.coverImageUrl ?? null);
   const galleryPhotos = images.filter((p) => p.url !== cover);
+  // Photo du mot de remerciement : la derniere de la galerie, a defaut la
+  // couverture. Une video de couverture n'y figure jamais.
+  const thankPhoto = galleryPhotos.at(-1) ?? images[0] ?? null;
 
   // Les tuiles affichent les heures : la cible est l'heure de l'evenement, pas
   // minuit. Dakar est a UTC, comme la date enregistree.
@@ -326,9 +329,38 @@ export function WeddingTemplate({
         </div>
       </Section>
 
+      {/* MERCI — le mot de la fin, avec une photo du couple en arche */}
+      <Section className="pt-0 sm:pt-0">
+        <div id="merci" className={`${sans.className} mx-auto max-w-xl scroll-mt-8 text-center`}>
+          <p className="text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)] sm:text-sm">
+            Avec gratitude
+          </p>
+          <h2 className={`${script.className} mt-2 text-6xl text-[var(--fp-ink)] sm:text-7xl`}>
+            Merci
+          </h2>
+          {thankPhoto && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={
+                thankPhoto.url.includes("res.cloudinary.com")
+                  ? thankPhoto.url.replace("w_2000", "w_900")
+                  : thankPhoto.url
+              }
+              alt={`${wedding.partnerOne} et ${wedding.partnerTwo}`}
+              loading="lazy"
+              decoding="async"
+              className="mx-auto mt-10 aspect-[4/5] w-full max-w-[22rem] rounded-b-xl rounded-t-full border-2 border-[var(--fp-dot)] object-cover shadow-[0_24px_50px_rgba(70,50,20,0.18)]"
+            />
+          )}
+          <p className="mx-auto mt-10 max-w-lg text-lg leading-relaxed sm:text-xl">
+            Votre présence est le plus beau des cadeaux. Merci de partager ce moment
+            avec nous.
+          </p>
+        </div>
+      </Section>
+
       {/* PIED DE PAGE — l'ornement du theme, une seule fois dans la page */}
       <footer
-        id="merci"
         className={`border-t px-5 pb-28 pt-14 text-center ${theme.line}`}
       >
         <div className={`text-lg ${theme.accent}`} aria-hidden="true">
