@@ -346,7 +346,7 @@ export function WeddingTemplate({
           </a>
         )}
         <p className={`mt-8 text-xs ${theme.accentSoft}`}>
-          Cree avec Faire-part Digital
+          Cree avec Ndoye Digital
         </p>
       </footer>
     </div>
