@@ -8,6 +8,9 @@ type Stage = "closed" | "opening" | "leaving" | "gone";
 const OPENING_MS = 1500;
 const LEAVING_MS = 700;
 
+/** Evenement emis a l'ouverture de l'enveloppe. */
+export const INVITATION_OPEN_EVENT = "invitation:open";
+
 /**
  * Porte d'entree de l'invitation : couvre la page jusqu'au geste de l'invite.
  * L'ecran est rendu cote serveur, pour que la page n'apparaisse jamais avant
@@ -44,6 +47,9 @@ export function EnvelopeGate({
 
   function open() {
     if (stage !== "closed") return;
+    // Diffuse dans ce meme clic : le navigateur n'autorise le son d'une video
+    // que pendant un geste de l'invite (voir hero-video.tsx).
+    window.dispatchEvent(new Event(INVITATION_OPEN_EVENT));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const opening = reduced ? 0 : OPENING_MS;
     const leaving = reduced ? 0 : LEAVING_MS;
