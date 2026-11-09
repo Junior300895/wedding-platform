@@ -5,6 +5,7 @@ import { Countdown } from "./countdown";
 import { EnvelopeIntro, initial, sans, script } from "./envelope-intro";
 import { SectionNav } from "./section-nav";
 import { VenueMap } from "./venue-map";
+import { SaveTheDate } from "./save-the-date";
 import { Itinerary, mapHref } from "./itinerary";
 import { Gallery } from "./gallery";
 import { RsvpForm } from "./rsvp-form";
@@ -151,8 +152,7 @@ export function WeddingTemplate({
               coverVideo ? "text-white/90" : theme.accentSoft
             }`}
           >
-            {/* Nous nous marions */}
-            2A DECO PROGRAMME
+            Nous nous marions
           </p>
 
           {coverVideo ? (
@@ -196,6 +196,11 @@ export function WeddingTemplate({
           </p>
         </Section>
       )}
+
+      {/* DATES A RETENIR — le calendrier, juste avant le deroule */}
+      <Section className="pb-0 sm:pb-0">
+        <SaveTheDate wedding={wedding} />
+      </Section>
 
       {/* ---------------------------------------------------------------
           LE JOUR J — l'element central : ou etre, et quand
