@@ -38,7 +38,7 @@ function Month({ year, month, marked }: { year: number; month: number; marked: S
 
   return (
     <div>
-      <h3 className="text-center font-serif text-2xl uppercase tracking-[0.18em] text-[var(--fp-ink-2)] sm:text-3xl">
+      <h3 className="text-center font-serif text-2xl uppercase tracking-[0.18em] text-[var(--fp-title-2,var(--fp-ink-2))] sm:text-3xl">
         {title}
       </h3>
       <div aria-hidden="true" className="mx-auto mt-8 grid max-w-md grid-cols-7 gap-y-2 text-center">
@@ -106,7 +106,7 @@ export function SaveTheDate({ wedding }: { wedding: PublicWedding }) {
       <p className="text-center text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)] sm:text-sm">
         Notez les dates
       </p>
-      <h2 className={`${script.className} mt-3 text-center text-5xl text-[var(--fp-ink)] sm:text-7xl`}>
+      <h2 className={`${script.className} mt-3 text-center text-5xl text-[var(--fp-title,var(--fp-ink))] sm:text-7xl`}>
         Dates à retenir
       </h2>
       <p className="sr-only">{spoken}</p>

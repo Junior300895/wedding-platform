@@ -236,7 +236,7 @@ export function WeddingTemplate({
         <Section className="pt-0 sm:pt-0">
           <div id="lieux" className="mx-auto max-w-2xl scroll-mt-8">
             <header className="mb-8 text-center">
-              <h2 className={`${script.className} text-6xl text-[var(--fp-ink)] sm:text-7xl`}>
+              <h2 className={`${script.className} text-6xl text-[var(--fp-title,var(--fp-ink))] sm:text-7xl`}>
                 Les Lieux
               </h2>
               <div
@@ -265,7 +265,7 @@ export function WeddingTemplate({
         {/* Monogramme en filigrane, derriere les tuiles. */}
         <div
           aria-hidden="true"
-          className={`${script.className} pointer-events-none absolute inset-0 flex select-none items-center justify-center whitespace-nowrap text-[clamp(8rem,24vw,15rem)] leading-none text-[color-mix(in_srgb,var(--fp-ink)_10%,transparent)]`}
+          className={`${script.className} pointer-events-none absolute inset-0 flex select-none items-center justify-center whitespace-nowrap text-[clamp(8rem,24vw,15rem)] leading-none text-[color-mix(in_srgb,var(--fp-title,var(--fp-ink))_10%,transparent)]`}
         >
           {initial(wedding.partnerOne)}&amp;{initial(wedding.partnerTwo)}
         </div>
@@ -287,7 +287,7 @@ export function WeddingTemplate({
               Nos moments
             </p>
             <h2
-              className={`${script.className} mb-12 text-center text-5xl text-[var(--fp-ink)] sm:text-7xl`}
+              className={`${script.className} mb-12 text-center text-5xl text-[var(--fp-title,var(--fp-ink))] sm:text-7xl`}
             >
               L&apos;amour en images
             </h2>
@@ -345,7 +345,7 @@ export function WeddingTemplate({
           <p className="text-xs uppercase tracking-[0.28em] text-[var(--fp-gold)] sm:text-sm">
             Avec gratitude
           </p>
-          <h2 className={`${script.className} mt-2 text-6xl text-[var(--fp-ink)] sm:text-7xl`}>
+          <h2 className={`${script.className} mt-2 text-6xl text-[var(--fp-title,var(--fp-ink))] sm:text-7xl`}>
             Merci
           </h2>
           {thankPhoto && (
@@ -416,7 +416,7 @@ export function WeddingTemplate({
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Ecrire sur WhatsApp a ${c.name || c.phone}`}
-                          className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--fp-ink)] px-4 text-sm font-medium text-[var(--fp-ink)] transition-colors hover:bg-[var(--fp-ink)] hover:text-white"
+                          className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--fp-title,var(--fp-ink))] px-4 text-sm font-medium text-[var(--fp-title,var(--fp-ink))] transition-colors hover:bg-[var(--fp-ink)] hover:text-white"
                         >
                           WhatsApp
                         </a>

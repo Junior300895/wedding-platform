@@ -81,7 +81,7 @@ export async function VenueMap({
     <article className="text-center">
       <h3 className="font-serif text-3xl sm:text-4xl">{title}</h3>
       <p
-        className={`${sans.className} mt-2 text-xs uppercase tracking-[0.1em] text-[var(--fp-ink-2)] sm:text-sm`}
+        className={`${sans.className} mt-2 text-xs uppercase tracking-[0.1em] text-[var(--fp-title-2,var(--fp-ink-2))] sm:text-sm`}
       >
         {details}
       </p>
