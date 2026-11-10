@@ -212,7 +212,7 @@ body {
   position: absolute;
   inset: 0;
   display: block;
-  background: var(--fp-night);
+  background: var(--fp-env-body, var(--fp-night));
   box-shadow: 0 24px 50px rgba(70, 50, 20, 0.28);
   perspective: 1000px;
 }
@@ -236,7 +236,7 @@ body {
   clip-path: polygon(100% 0, 50% 50%, 100% 100%);
 }
 .envelope-pocket-bottom {
-  background: linear-gradient(var(--fp-env-bottom), var(--fp-night));
+  background: linear-gradient(var(--fp-env-bottom), var(--fp-env-body, var(--fp-night)));
   clip-path: polygon(0 100%, 50% 50%, 100% 100%);
 }
 .envelope-flap {

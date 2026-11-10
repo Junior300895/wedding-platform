@@ -11,6 +11,7 @@ const templates = [
   { key: "tradition", name: "Tradition", description: "Inspire des codes locaux", style: "Motifs traditionnels, couleurs chaudes", minTier: PlanTier.PREMIUM, sortOrder: 5 },
   { key: "oriental", name: "Oriental", description: "Elegant et decoratif", style: "Arabesques, tons emeraude et or", minTier: PlanTier.PRESTIGE, sortOrder: 6 },
   { key: "sable", name: "Sable", description: "Beige et marron, chaleureux", style: "Fond sable, details brun chocolat et caramel", minTier: PlanTier.ESSENTIEL, sortOrder: 7 },
+  { key: "blanc-or", name: "Blanc & Or", description: "Blanc pur et touches dorees", style: "Fond blanc, enveloppe ivoire, details et titres dores", minTier: PlanTier.ESSENTIEL, sortOrder: 8 },
 ];
 
 async function main() {
