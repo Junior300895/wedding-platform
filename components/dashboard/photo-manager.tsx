@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import {
   uploadPhotoAction,
   deletePhotoAction,
@@ -9,6 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { isVideo } from "@/lib/media";
 import { CoverVideoUpload } from "./cover-video-upload";
+
+/** Memes regles que le serveur (lib/storage.ts), verifiees avant l'envoi. */
+const ACCEPTED = ["image/jpeg", "image/png", "image/webp"];
+const MAX_SIZE = 8 * 1024 * 1024;
 
 type Photo = {
   id: string;
@@ -25,37 +29,90 @@ export function PhotoManager({
   weddingId: string;
   photos: Photo[];
 }) {
-  const action = uploadPhotoAction.bind(null, weddingId);
-  const [state, formAction, uploading] = useActionState(action, {});
   const [pending, startTransition] = useTransition();
-  const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  // Avancement de l'envoi groupe : "3 / 10", null hors envoi.
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  /**
+   * Une photo par requete, l'une apres l'autre : chaque envoi reste sous la
+   * limite de taille d'une requete, et un echec n'arrete pas les suivantes.
+   */
+  async function uploadAll(files: File[]) {
+    setErrors([]);
+    setProgress({ done: 0, total: files.length });
+    const failed: string[] = [];
+
+    for (const [i, file] of files.entries()) {
+      if (!ACCEPTED.includes(file.type)) {
+        failed.push(`${file.name} : format non supporte (JPG, PNG ou WebP)`);
+      } else if (file.size > MAX_SIZE) {
+        failed.push(`${file.name} : fichier trop lourd (max 8 Mo)`);
+      } else {
+        const body = new FormData();
+        body.append("file", file);
+        try {
+          const result = await uploadPhotoAction(weddingId, {}, body);
+          if (result.error) failed.push(`${file.name} : ${result.error}`);
+        } catch {
+          failed.push(`${file.name} : l'envoi a echoue`);
+        }
+      }
+      setProgress({ done: i + 1, total: files.length });
+    }
+
+    setErrors(failed);
+    setProgress(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  const uploading = progress !== null;
 
   return (
     <div className="space-y-5">
-      <form
-        ref={formRef}
-        action={(fd) => {
-          formAction(fd);
-          formRef.current?.reset();
-        }}
-        className="flex flex-wrap items-center gap-3"
-      >
+      <div className="flex flex-wrap items-center gap-3">
         <input
+          ref={inputRef}
           type="file"
-          name="file"
-          accept="image/jpeg,image/png,image/webp"
-          required
-          className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:text-white"
+          accept={ACCEPTED.join(",")}
+          multiple
+          className="sr-only"
+          aria-label="Choisir des photos"
+          onChange={(e) => {
+            const files = Array.from(e.target.files ?? []);
+            if (files.length > 0) void uploadAll(files);
+          }}
         />
-        <Button type="submit" size="sm" disabled={uploading}>
-          {uploading ? "Envoi..." : "Ajouter"}
+        <Button
+          type="button"
+          size="sm"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading
+            ? `Envoi ${progress.done} / ${progress.total}...`
+            : "Ajouter des photos"}
         </Button>
-      </form>
+        <p className="text-xs text-neutral-500">
+          Plusieurs photos a la fois possible. JPG, PNG ou WebP, 8 Mo maximum chacune.
+        </p>
+      </div>
 
       <CoverVideoUpload weddingId={weddingId} />
 
-      {state?.error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>
+      {errors.length > 0 && (
+        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="font-medium">
+            {errors.length} photo{errors.length > 1 ? "s" : ""} non ajoutee
+            {errors.length > 1 ? "s" : ""} :
+          </p>
+          <ul className="mt-1 list-disc pl-5">
+            {errors.map((e) => (
+              <li key={e}>{e}</li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {photos.length === 0 ? (
