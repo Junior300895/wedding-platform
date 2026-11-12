@@ -18,6 +18,7 @@ type Wedding = {
   contactPhone: string | null;
   templateId: string | null;
   rsvpEnabled: boolean;
+  shareEnabled: boolean;
 };
 
 export function WeddingEditForm({ wedding }: { wedding: Wedding }) {
@@ -79,6 +80,24 @@ export function WeddingEditForm({ wedding }: { wedding: Wedding }) {
           <span className="mt-0.5 block text-xs text-neutral-500">
             Decochee, la section disparait de l&apos;invitation et plus aucune reponse
             n&apos;est acceptee. Les reponses deja recues sont conservees.
+          </span>
+        </span>
+      </label>
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 p-4">
+        <input
+          type="checkbox"
+          name="shareEnabled"
+          defaultChecked={wedding.shareEnabled}
+          className="mt-0.5 h-4 w-4"
+        />
+        <span>
+          <span className="block text-sm font-medium text-neutral-900">
+            Afficher le partage de l&apos;invitation
+          </span>
+          <span className="mt-0.5 block text-xs text-neutral-500">
+            Decochee, la section &laquo; Partager l&apos;invitation &raquo; disparait :
+            bouton WhatsApp, lien a copier et QR code.
           </span>
         </span>
       </label>

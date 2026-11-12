@@ -37,6 +37,7 @@ export type PublicWedding = {
   message: string | null;
   contactPhone: string | null;
   rsvpEnabled: boolean;
+  shareEnabled: boolean;
   coverImageUrl: string | null;
   events: PublicEvent[];
   contacts: PublicContact[];

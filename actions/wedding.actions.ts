@@ -111,6 +111,7 @@ export async function updateWeddingAction(
       templateId: data.templateId || null,
       // Case a cocher : absente du formulaire quand elle est decochee.
       rsvpEnabled: formData.get("rsvpEnabled") === "on",
+      shareEnabled: formData.get("shareEnabled") === "on",
     },
   });
 

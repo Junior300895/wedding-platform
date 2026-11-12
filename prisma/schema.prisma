@@ -107,6 +107,8 @@ model Wedding {
   planTier     PlanTier      @default(ESSENTIEL)
   // Affiche la section "Confirmez votre presence" et accepte les reponses.
   rsvpEnabled  Boolean       @default(true)
+  // Affiche la section "Partager l'invitation" (WhatsApp, lien, QR code).
+  shareEnabled Boolean       @default(true)
 
   // SEO / partage
   coverImageUrl  String? @db.VarChar(1024)

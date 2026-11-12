@@ -319,25 +319,27 @@ export function WeddingTemplate({
         </Section>
       )}
 
-      {/* PARTAGE */}
-      <Section className="pt-0 sm:pt-0">
-        <div className="mx-auto max-w-md">
-          <SectionHead
-            eyebrow="Faites passer"
-            title="Partager l'invitation"
-            theme={theme}
-          />
-          <ShareButtons
-            weddingId={wedding.id}
-            publicUrl={publicUrl}
-            partnerOne={wedding.partnerOne}
-            partnerTwo={wedding.partnerTwo}
-            qrDataUrl={qrDataUrl}
-            accentBtn={accentBtn}
-            theme={theme}
-          />
-        </div>
-      </Section>
+      {/* PARTAGE — reglable depuis le dashboard */}
+      {wedding.shareEnabled && (
+        <Section className="pt-0 sm:pt-0">
+          <div className="mx-auto max-w-md">
+            <SectionHead
+              eyebrow="Faites passer"
+              title="Partager l'invitation"
+              theme={theme}
+            />
+            <ShareButtons
+              weddingId={wedding.id}
+              publicUrl={publicUrl}
+              partnerOne={wedding.partnerOne}
+              partnerTwo={wedding.partnerTwo}
+              qrDataUrl={qrDataUrl}
+              accentBtn={accentBtn}
+              theme={theme}
+            />
+          </div>
+        </Section>
+      )}
 
       {/* MERCI — le mot de la fin, avec une photo du couple en arche */}
       <Section className="pt-0 sm:pt-0">
